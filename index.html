@@ -1,0 +1,1603 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>SourceWise demo</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="">
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Sans:wght@400;500;600;700&amp;family=Noto+Serif+SC:wght@400;600&amp;display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#F2F5F6;--surface:#FFFFFF;--surface-2:#EBF0F2;--ink:#13262C;--ink-2:#46585E;--ink-3:#738489;--line:#D6DFE2;
+  --brand:#16323A;--brand-2:#21454F;--accent:#1F7A63;--accent-ink:#FFFFFF;--accent-soft:#E0F1EA;
+  --warn:#8E5A0E;--warn-soft:#FBEFD8;--crit:#A8323F;--crit-soft:#FBE6E8;--info:#2A5A8A;--info-soft:#E5EEF8;
+  --paper:#FFFFFF;--paper-ink:#1F1F1F;--hl:#FFE38A;
+  --s1:#1F7A63;--s2:#2B6A88;--s3:#5E5394;--s4:#7A6A2E;
+  color-scheme:light;
+  box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#0E181B;--surface:#152327;--surface-2:#1C2E33;--ink:#E4EDEF;--ink-2:#A7B9BE;--ink-3:#7D9196;--line:#2A3D43;
+    --brand:#0A1417;--brand-2:#16282D;--accent:#4FC2A0;--accent-ink:#06251C;--accent-soft:#163A30;
+    --warn:#E6AE55;--warn-soft:#3A2B12;--crit:#F07F8B;--crit-soft:#3E1C22;--info:#86B6E8;--info-soft:#1A2C3F;
+    --paper:#F5F4F0;--paper-ink:#1F1F1F;--hl:#F2CF5B;
+    --s1:#2E9C7F;--s2:#3A86AB;--s3:#7C70B8;--s4:#9C8A45;
+    color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#0E181B;--surface:#152327;--surface-2:#1C2E33;--ink:#E4EDEF;--ink-2:#A7B9BE;--ink-3:#7D9196;--line:#2A3D43;
+  --brand:#0A1417;--brand-2:#16282D;--accent:#4FC2A0;--accent-ink:#06251C;--accent-soft:#163A30;
+  --warn:#E6AE55;--warn-soft:#3A2B12;--crit:#F07F8B;--crit-soft:#3E1C22;--info:#86B6E8;--info-soft:#1A2C3F;
+  --paper:#F5F4F0;--paper-ink:#1F1F1F;--hl:#F2CF5B;
+  --s1:#2E9C7F;--s2:#3A86AB;--s3:#7C70B8;--s4:#9C8A45;
+  color-scheme:dark;
+}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*,*::before,*::after{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.55 "Instrument Sans","PingFang SC","Microsoft YaHei",system-ui,-apple-system,"Segoe UI",sans-serif;-webkit-font-smoothing:antialiased}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:10;background:var(--brand)}
+button{font:inherit;color:inherit}
+:focus-visible{outline:2px solid var(--info);outline-offset:2px}
+h1{font-size:26px;line-height:1.2;letter-spacing:-0.012em;font-weight:600;margin:0 0 4px}
+h2{font-size:18px;font-weight:600;margin:0 0 12px;letter-spacing:-0.005em}
+h3{font-size:15px;font-weight:600;margin:0 0 6px}
+p{margin:0 0 10px}
+.muted{color:var(--ink-2)}
+.small{font-size:13px}
+
+/* top bar */
+.top{position:sticky;top:env(safe-area-inset-top,0px);z-index:20;background:var(--brand);color:#EAF2F3;display:flex;align-items:center;gap:14px;padding:0 20px;height:58px}
+.logo{display:flex;align-items:center;gap:10px;font-weight:700;font-size:17px;letter-spacing:-0.01em}
+.logo svg{display:block}
+.top .spacer{flex:1}
+.credit{font-size:12.5px;color:#A9C1C6;white-space:nowrap}
+@media (max-width:760px){.credit{display:none}}
+.demo-tag{font-size:12px;font-weight:600;color:#BFD3D7;border:1px solid #3B5A62;border-radius:999px;padding:2px 9px}
+.bell{position:relative;background:transparent;border:0;color:#EAF2F3;cursor:pointer;padding:6px;border-radius:6px;display:flex}
+.bell:hover{background:var(--brand-2)}
+.bell .dot{position:absolute;top:2px;right:2px;min-width:16px;height:16px;border-radius:999px;background:#E2626F;color:#fff;font-size:11px;font-weight:700;display:grid;place-items:center;padding:0 4px}
+.who{position:relative}
+.who-btn{display:flex;align-items:center;gap:9px;background:var(--brand-2);border:1px solid #33535B;color:#fff;border-radius:999px;padding:4px 12px 4px 4px;cursor:pointer;font-weight:600;font-size:14px}
+.av{width:28px;height:28px;border-radius:50%;display:grid;place-items:center;font-size:13px;font-weight:700;color:#fff}
+.av.s{background:#2E8B6F}.av.k{background:#4D69A8}
+.menu{position:absolute;right:0;top:calc(100% + 8px);width:290px;background:var(--surface);color:var(--ink);border:1px solid var(--line);border-radius:10px;box-shadow:0 14px 40px rgba(0,0,0,.22);padding:6px;z-index:30}
+.menu .mh{font-size:12.5px;color:var(--ink-3);padding:8px 10px 4px;font-weight:600}
+.menu button{display:flex;align-items:center;gap:10px;width:100%;text-align:left;background:none;border:0;border-radius:6px;padding:8px 10px;cursor:pointer;font-size:14px}
+.menu button:hover{background:var(--surface-2)}
+.menu .sep{height:1px;background:var(--line);margin:6px 4px}
+.menu .chk{margin-left:auto;color:var(--accent);font-weight:700}
+.menu .danger{color:var(--crit)}
+
+/* layout */
+.wrap{max-width:1240px;margin:0 auto;padding:22px 24px 72px}
+.hint{display:flex;gap:10px;align-items:flex-start;background:var(--info-soft);color:var(--ink);border-left:3px solid var(--info);padding:10px 14px;margin:0 0 20px;font-size:14px;border-radius:0}
+.hint svg{flex:none;margin-top:2px;color:var(--info)}
+.pagehead{display:flex;align-items:flex-end;justify-content:space-between;gap:16px;margin-bottom:18px;flex-wrap:wrap}
+.panel{background:var(--surface);border:1px solid var(--line);border-radius:10px}
+.pad{padding:18px 20px}
+.grid2{display:grid;grid-template-columns:minmax(0,1.55fr) minmax(0,1fr);gap:20px;align-items:start}
+.grid2.even{grid-template-columns:1fr 1fr}
+@media (max-width:920px){.grid2,.grid2.even{grid-template-columns:1fr}}
+.row{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.right{margin-left:auto}
+
+/* stepper */
+.steps{display:flex;gap:6px;margin:0 0 18px;flex-wrap:wrap}
+.step{display:flex;align-items:center;gap:8px;background:none;border:1px solid var(--line);border-radius:999px;padding:5px 12px 5px 6px;font-size:13.5px;font-weight:600;color:var(--ink-2);cursor:pointer}
+.step .n{width:22px;height:22px;border-radius:50%;display:grid;place-items:center;font-size:12px;background:var(--surface-2);color:var(--ink-2)}
+.step.on{background:var(--surface);border-color:var(--ink);color:var(--ink)}
+.step.on .n{background:var(--ink);color:var(--surface)}
+.step.done .n{background:var(--accent);color:var(--accent-ink)}
+.step:disabled{opacity:.45;cursor:not-allowed}
+
+/* buttons, pills */
+.btn{font-weight:600;font-size:14px;border-radius:6px;padding:9px 15px;border:1px solid transparent;cursor:pointer;display:inline-flex;align-items:center;gap:8px;line-height:1.2}
+.btn.pri{background:var(--accent);color:var(--accent-ink)}
+.btn.pri:hover:not(:disabled){filter:brightness(1.07)}
+.btn.sec{background:var(--surface);border-color:var(--line);color:var(--ink)}
+.btn.sec:hover:not(:disabled){border-color:var(--ink-3)}
+.btn.lnk{background:none;border:0;padding:4px 2px;color:var(--info)}
+.btn.sm{padding:6px 11px;font-size:13px}
+.btn:disabled{opacity:.42;cursor:not-allowed}
+.pill{display:inline-flex;align-items:center;gap:6px;font-size:12.5px;font-weight:600;padding:2px 10px;border-radius:999px;white-space:nowrap}
+.ok{background:var(--accent-soft);color:var(--accent)}
+.warn{background:var(--warn-soft);color:var(--warn)}
+.crit{background:var(--crit-soft);color:var(--crit)}
+.info{background:var(--info-soft);color:var(--info)}
+.neu{background:var(--surface-2);color:var(--ink-2)}
+
+/* tables */
+.tw{overflow-x:auto}
+.tbl{width:100%;border-collapse:collapse;font-size:14px}
+.tbl th{text-align:left;font-weight:600;color:var(--ink-3);font-size:12.5px;padding:10px 12px;border-bottom:1px solid var(--line);white-space:nowrap}
+.tbl td{padding:12px;border-bottom:1px solid var(--line);vertical-align:top}
+.tbl tr:last-child td{border-bottom:0}
+.tbl tr.click{cursor:pointer}
+.tbl tr.click:hover td{background:var(--surface-2)}
+.tbl tr.new td:first-child{box-shadow:inset 3px 0 0 var(--accent)}
+
+/* forms */
+.field{display:flex;flex-direction:column;gap:5px}
+.field label{font-size:12.5px;font-weight:600;color:var(--ink-3)}
+.field .v,.inp{background:var(--surface-2);border:1px solid var(--line);border-radius:6px;padding:9px 11px;font-size:14px;min-height:39px;color:var(--ink)}
+.field .v.empty{color:var(--ink-3)}
+.fgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:14px}
+select.inp{cursor:pointer;background:var(--surface)}
+textarea.inp{width:100%;font:inherit;font-size:14px;resize:vertical;min-height:84px;background:var(--surface)}
+
+/* checklist */
+.cl-group{margin-bottom:16px}
+.cl-group h3{color:var(--ink-2);font-size:13.5px;margin-bottom:8px}
+details.ci{border:1px solid var(--line);border-radius:8px;margin-bottom:8px;background:var(--surface)}
+details.ci summary{list-style:none;display:flex;gap:10px;align-items:center;padding:11px 14px;cursor:pointer;font-weight:500}
+details.ci summary::-webkit-details-marker{display:none}
+details.ci summary .caret{margin-left:auto;color:var(--ink-3);transition:transform .2s}
+details.ci[open] summary .caret{transform:rotate(90deg)}
+details.ci .body{padding:0 14px 12px 40px;font-size:14px;color:var(--ink-2)}
+details.ci.key{border-color:var(--warn);background:var(--warn-soft)}
+.box{width:18px;height:18px;border-radius:5px;border:1.5px solid var(--ink-3);flex:none;display:grid;place-items:center}
+.box.ok{border-color:var(--accent);background:var(--accent);color:var(--accent-ink)}
+.msg{white-space:pre-wrap;background:var(--surface-2);border:1px solid var(--line);border-radius:8px;padding:14px 16px;font-size:14px;line-height:1.65;max-height:420px;overflow:auto}
+.seg-toggle{display:inline-flex;border:1px solid var(--line);border-radius:7px;overflow:hidden}
+.seg-toggle button{background:var(--surface);border:0;padding:6px 12px;font-size:13px;font-weight:600;cursor:pointer;color:var(--ink-2)}
+.seg-toggle button.on{background:var(--ink);color:var(--surface)}
+
+/* upload */
+.drop{border:1.5px dashed var(--ink-3);border-radius:10px;padding:26px;text-align:center;background:var(--surface)}
+.drop svg{color:var(--ink-3)}
+.prog{height:6px;border-radius:999px;background:var(--surface-2);overflow:hidden}
+.prog i{display:block;height:100%;background:var(--accent);transition:width .4s ease}
+.status{display:inline-flex;align-items:center;gap:7px;font-size:13px;color:var(--ink-2)}
+.spin{width:12px;height:12px;border-radius:50%;border:2px solid var(--line);border-top-color:var(--info);animation:sp .8s linear infinite}
+@keyframes sp{to{transform:rotate(360deg)}}
+.fname{font-weight:500}
+.fsub{font-size:12.5px;color:var(--ink-3)}
+
+/* wealth streams bar: the signature element */
+.streams-wrap{padding:20px 22px 18px}
+.streams-title{display:flex;align-items:baseline;gap:12px;flex-wrap:wrap;margin-bottom:14px}
+.streams-title .big{font-size:30px;font-weight:600;letter-spacing:-0.02em}
+.streams{display:flex;height:46px;gap:3px;border-radius:8px;overflow:hidden}
+.seg{display:flex;align-items:center;padding:0 12px;color:#fff;font-size:13px;font-weight:600;white-space:nowrap;overflow:hidden;transition:flex-grow .9s cubic-bezier(.3,.7,.2,1);min-width:0}
+.seg.gap{background:repeating-linear-gradient(135deg,var(--crit-soft) 0 7px,var(--surface) 7px 14px);color:var(--crit);border:1.5px dashed var(--crit);border-radius:2px}
+.legend{display:flex;gap:18px;flex-wrap:wrap;margin-top:12px;font-size:13px;color:var(--ink-2)}
+.legend span{display:inline-flex;align-items:center;gap:7px}
+.legend i{width:10px;height:10px;border-radius:2px;display:inline-block}
+@media (prefers-reduced-motion: reduce){.seg,.prog i{transition:none}.spin{animation:none}}
+
+/* narrative */
+.nar section{padding:14px 0;border-top:1px solid var(--line)}
+.nar section:first-child{border-top:0;padding-top:0}
+.nar h3{display:flex;gap:10px;align-items:baseline;flex-wrap:wrap}
+.nar h3 .amt{font-weight:500;color:var(--ink-3);font-size:13.5px}
+.nar p{max-width:72ch;margin:0}
+.cite{display:inline-flex;align-items:center;gap:4px;font-size:12px;font-weight:600;padding:1px 8px 1px 6px;border-radius:999px;border:1px solid var(--line);background:var(--surface-2);color:var(--info);cursor:pointer;vertical-align:1px;line-height:1.5;white-space:nowrap}
+.cite:hover{border-color:var(--info)}
+.gapline{background:var(--crit-soft);color:var(--crit);padding:1px 5px;border-radius:3px;font-weight:600}
+.newline{background:var(--accent-soft);color:var(--ink);padding:1px 3px;border-radius:3px}
+
+/* issues */
+.issue{border:1px solid var(--line);border-radius:8px;padding:14px;margin-bottom:10px;background:var(--surface)}
+.issue.c{border-left:4px solid var(--crit)}
+.issue.w{border-left:4px solid var(--warn)}
+.issue.n{border-left:4px solid var(--info)}
+.issue.done{border-left-color:var(--accent);opacity:.92}
+.issue h3{margin:6px 0 4px}
+.issue p{font-size:14px;color:var(--ink-2)}
+
+/* verification tabs */
+.tabs{display:flex;gap:2px;border-bottom:1px solid var(--line);padding:0 12px;overflow-x:auto}
+.tab{background:none;border:0;border-bottom:2px solid transparent;padding:12px 10px 10px;font-weight:600;font-size:14px;color:var(--ink-3);cursor:pointer;display:flex;gap:7px;align-items:center;white-space:nowrap}
+.tab.on{color:var(--ink);border-bottom-color:var(--ink)}
+.tag-sim{font-size:12px;color:var(--ink-3);border:1px dashed var(--line);border-radius:999px;padding:1px 9px}
+.kv{display:grid;grid-template-columns:max-content 1fr;gap:6px 16px;font-size:14px}
+.kv dt{color:var(--ink-3)}
+.kv dd{margin:0}
+.ai{display:flex;gap:10px;background:var(--surface-2);border-radius:8px;padding:12px 14px;font-size:14px}
+.ai svg{flex:none;color:var(--accent);margin-top:2px}
+.ctx li{margin-bottom:8px}
+
+/* overlays */
+.scrim{position:fixed;inset:0;background:rgba(8,18,22,.48);z-index:40}
+.viewer{position:fixed;top:0;right:0;bottom:0;width:min(1120px,97vw);background:var(--surface);z-index:50;display:flex;flex-direction:column;box-shadow:-14px 0 44px rgba(0,0,0,.25);padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+.vhead{padding:16px 20px 12px;border-bottom:1px solid var(--line);display:flex;gap:14px;align-items:flex-start}
+.vhead .meta{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px}
+.x{background:none;border:1px solid var(--line);border-radius:6px;width:34px;height:34px;display:grid;place-items:center;cursor:pointer;flex:none;color:var(--ink)}
+.vbody{flex:1;display:grid;grid-template-columns:minmax(0,1.1fr) minmax(0,1fr);min-height:0}
+.vleft{background:var(--surface-2);overflow:auto;padding:8px 16px 30px}
+.vright{display:flex;flex-direction:column;min-height:0;border-left:1px solid var(--line)}
+.vright .vpane{overflow:auto;padding:16px 20px 30px;flex:1}
+.vfoot{border-top:1px solid var(--line);padding:12px 20px;display:flex;gap:10px;align-items:center}
+@media (max-width:860px){.vbody{grid-template-columns:1fr;overflow:auto}.vleft,.vright .vpane{overflow:visible}}
+.cap{font-size:12.5px;color:var(--ink-3);margin:10px auto 0;max-width:660px;display:flex;justify-content:space-between}
+.paper{background:var(--paper);color:var(--paper-ink);max-width:660px;margin:8px auto 0;padding:38px 42px;box-shadow:0 1px 3px rgba(0,0,0,.14),0 8px 24px rgba(0,0,0,.06);position:relative;overflow:hidden;font-family:"Noto Serif SC","Songti SC","SimSun",serif;font-size:13.5px;line-height:1.75}
+.paper::after{content:"SAMPLE";position:absolute;top:42%;left:50%;transform:translate(-50%,-50%) rotate(-24deg);font:700 104px/1 "Instrument Sans",sans-serif;color:rgba(168,50,63,.08);pointer-events:none;letter-spacing:.06em}
+.paper.photo{transform:rotate(-1.1deg);background:#EFEBE2;filter:contrast(.93) saturate(.9);margin-top:16px}
+.paper.en{font-family:"Instrument Sans",sans-serif}
+.doc h2.d1{font-size:19px;text-align:center;margin:4px 0 14px;font-weight:600}
+.doc h3.d2{font-size:15.5px;margin:14px 0 6px;font-weight:600}
+.doc h4.d3{font-size:14px;margin:14px 0 4px;font-weight:600}
+.doc p{margin:0 0 9px}
+.doc table{border-collapse:collapse;width:100%;margin:6px 0 12px;font-size:12.5px}
+.doc th,.doc td{border:1px solid rgba(0,0,0,.18);padding:5px 7px;text-align:left;vertical-align:top}
+.doc th{background:rgba(0,0,0,.04);font-weight:600}
+.vpane .doc th,.vpane .doc td{border-color:var(--line)}
+.vpane .doc th{background:var(--surface-2)}
+.vpane .doc{font-size:14px}
+.pgbrk{text-align:center;font-size:11.5px;color:#8A8A8A;border-top:1px dashed #BBB;margin:18px 0 12px;padding-top:6px;font-family:"Instrument Sans",sans-serif}
+.ill{background:#6E6E6E;color:transparent;border-radius:2px;filter:blur(1.4px)}
+mark.hl{background:rgba(255,227,138,.38);color:inherit;border-radius:3px;padding:0 2px;transition:background .3s,box-shadow .3s}
+mark.hl.on{background:var(--hl);box-shadow:0 0 0 3px var(--hl)}
+.facts td{font-size:13.5px}
+.facts tr.has{cursor:pointer}
+.facts tr.has:hover td{background:var(--surface-2)}
+.facts tr.on td{background:var(--warn-soft)}
+
+.drawer{position:fixed;top:0;right:0;bottom:0;width:min(460px,100vw);background:var(--surface);z-index:50;display:flex;flex-direction:column;box-shadow:-14px 0 44px rgba(0,0,0,.25);padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+.dpane{flex:1;overflow:auto;padding:16px 20px}
+.msgb{border:1px solid var(--line);border-radius:10px;padding:12px 14px;margin-bottom:12px;font-size:14px}
+.msgb .who2{display:flex;align-items:center;gap:8px;font-weight:600;font-size:13.5px;margin-bottom:6px}
+.msgb.aib{background:var(--surface-2)}
+.typing{display:inline-flex;gap:4px}
+.typing i{width:6px;height:6px;border-radius:50%;background:var(--ink-3);animation:bl 1s infinite}
+.typing i:nth-child(2){animation-delay:.15s}.typing i:nth-child(3){animation-delay:.3s}
+@keyframes bl{0%,100%{opacity:.25}50%{opacity:1}}
+.audit li{display:grid;grid-template-columns:92px 1fr;gap:10px;padding:9px 0;border-bottom:1px solid var(--line);font-size:13.5px}
+.audit .t{color:var(--ink-3)}
+.audit .a{font-weight:600}
+
+.modal{position:fixed;inset:0;z-index:60;display:grid;place-items:center;padding:20px}
+.modal .card{background:var(--surface);border-radius:14px;max-width:560px;width:100%;padding:28px 30px;box-shadow:0 30px 80px rgba(0,0,0,.35);position:relative}
+.modal .card h2{font-size:22px}
+.toast{position:fixed;left:50%;bottom:calc(24px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);background:var(--ink);color:var(--surface);padding:11px 18px;border-radius:8px;font-size:14px;font-weight:500;z-index:70;box-shadow:0 10px 30px rgba(0,0,0,.25);max-width:90vw}
+.banner{display:flex;gap:12px;align-items:center;flex-wrap:wrap;border:1px solid var(--accent);background:var(--accent-soft);border-radius:10px;padding:12px 16px;margin-bottom:18px;font-size:14px}
+.empty{padding:28px;text-align:center;color:var(--ink-3)}
+.letter h3.sec{font-size:14px;color:var(--ink-2);margin:22px 0 8px;padding-top:14px;border-top:1px solid var(--line)}
+.kvt td{padding:8px 10px;font-size:13.5px}
+.letter .nar section{padding:10px 0}
+.letter details.ci .body{color:var(--ink)}
+</style>
+<script type='text/javascript' nonce='mRDic92a+BXS+VG9I9ToEw==' src='https://82692987-2933-4de6-b12b-1132058e6923.frame.claudeusercontent.com/F7oX2tLg8IvWeNFztclSMO3te--OLWSGaYZDRwsbFtM0qqY1OCXCHbtQxFGnkYORsTmuMDdYLd2cS9poXUqFzLH70_HkDXGt8MzCqB7T4n9THmcKWOxE4OU78yPoOHgrx-P5ahlhDmFPPCZsqgVOksh_4j9PB4jOd-aSIOAPo9yCIIZ1ys3ARxfh8Oad3h8BuMLX_XuPYOyCBxdM-dWn7VDMWtQ2XcByc6bwhFfQJgxwLC_50MXFc3YqcW3OiRKb4R_25vPhgM-1yzwR-Hx-EQ5YwtYu-5gVQM6c7mivBS6KOOFa9sq3US80HxnFUEsccx0k3fD0qr62aFj2S8pYPWxCJila2m5XriDvG93hQsNcFuM5o5wLJf3AVIfBYVrJDtTldAjBXgNEmSAT1W9UU4Tn7GF9wmnZFpDYqtYytPKaEkP50d8Uk815XjYgYJtYX7t7Wx-cex66G1JUAlDK677U_u0HCyTy7sQEpEuDcfxUivv3eQ9WExs3vBm0TjsXvM8ULCN5qpIqbpGddwnyoo-Lz4kpiG8HNsl3A8DcKNkuVcVcROEbPtTCCq8BjxIDEpgLQ9Z2V4MYfFpxNvwlHdL87K1cDjSzDs9vASL8xUksd1ZZfx9TxJFzqS1iSO9G7v12C3QIk1CbEl4SUPzujYY-Ht9flBFyCrsMzUQEB_dk3H98DCu3IEs5WOq_gkTgYWFgowWNenp2xgy_3OHgrg'></script></head>
+<body>
+<div id="app"></div>
+<div id="overlay"></div>
+<script>
+/* ---------- icons ---------- */
+const I = {
+  doc:'<svg width="12" height="12" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M4 1.5h5.5L13 5v9.5H4z"/><path d="M9.5 1.5V5H13"/></svg>',
+  info:'<svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="8" cy="8" r="6.5"/><path d="M8 7v4M8 4.6v.2"/></svg>',
+  bell:'<svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M5 8a5 5 0 0 1 10 0v4l1.5 2.5h-13L5 12z"/><path d="M8 17a2 2 0 0 0 4 0"/></svg>',
+  caret:'<svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M3 4.5 6 7.5l3-3"/></svg>',
+  chev:'<svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M4.5 3 7.5 6l-3 3"/></svg>',
+  check:'<svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="2"><path d="m2.5 6.2 2.3 2.3 4.7-5"/></svg>',
+  x:'<svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M3 3l8 8M11 3l-8 8"/></svg>',
+  up:'<svg width="30" height="30" viewBox="0 0 30 30" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M15 20V7M9.5 12.5 15 7l5.5 5.5"/><path d="M5 20v4h20v-4"/></svg>',
+  spark:'<svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M8 1.5 9.6 6.4 14.5 8 9.6 9.6 8 14.5 6.4 9.6 1.5 8l4.9-1.6z"/></svg>',
+  chat:'<svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M2 3h12v8H7l-3 2.5V11H2z"/></svg>',
+  lock:'<svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.4"><rect x="2.5" y="5.5" width="7" height="5" rx="1"/><path d="M4 5.5V4a2 2 0 0 1 4 0v1.5"/></svg>'
+};
+const LOGO = '<svg width="26" height="26" viewBox="0 0 26 26" fill="none" stroke-linecap="round"><path d="M3 5c5 0 7 4 10 8" stroke="#7FD1B6" stroke-width="2.2"/><path d="M3 13h10" stroke="#8DBFE0" stroke-width="2.2"/><path d="M3 21c5 0 7-4 10-8" stroke="#B3A9E6" stroke-width="2.2"/><path d="M13 13h10" stroke="#FFFFFF" stroke-width="3"/></svg>';
+
+/* ---------- helpers ---------- */
+function esc(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;')}
+function inl(s){let h=esc(s);h=h.replace(/\*\*(.+?)\*\*/g,'<strong>$1</strong>');h=h.replace(/█+/g,m=>'<span class="ill">'+m+'</span>');return h}
+function mdTable(rows){
+  const cells=r=>r.trim().replace(/^\|/,'').replace(/\|$/,'').split('|').map(c=>c.trim());
+  let head=cells(rows[0]);let body=rows.slice(1).filter(r=>!/^\|[\s:|-]+\|$/.test(r.trim()));
+  return '<div class="tw"><table><thead><tr>'+head.map(c=>'<th>'+inl(c)+'</th>').join('')+'</tr></thead><tbody>'+body.map(r=>'<tr>'+cells(r).map(c=>'<td>'+inl(c)+'</td>').join('')+'</tr>').join('')+'</tbody></table></div>';
+}
+function md(src){
+  const L=src.replace(/^\n+|\n+$/g,'').split('\n');let out='',para=[],i=0;
+  const flush=()=>{if(para.length){out+='<p>'+para.map(inl).join('<br>')+'</p>';para=[]}};
+  while(i<L.length){
+    const l=L[i];
+    if(/^\s*$/.test(l)){flush();i++;continue}
+    if(/^--- Page/.test(l)){flush();out+='<div class="pgbrk">'+esc(l.replace(/-/g,'').trim())+'</div>';i++;continue}
+    const h=l.match(/^(#{1,3}) (.*)$/);
+    if(h){flush();const n=h[1].length;out+='<h'+(n+1)+' class="d'+n+'">'+inl(h[2])+'</h'+(n+1)+'>';i++;continue}
+    if(l.trim().startsWith('|')){flush();const rows=[];while(i<L.length&&L[i].trim().startsWith('|')){rows.push(L[i]);i++}out+=mdTable(rows);continue}
+    if(/^- /.test(l)){flush();const items=[];while(i<L.length&&/^- /.test(L[i])){items.push(L[i].slice(2));i++}out+='<ul>'+items.map(x=>'<li>'+inl(x)+'</li>').join('')+'</ul>';continue}
+    para.push(l);i++;
+  }
+  flush();return out;
+}
+function applyHL(html,hl,side){
+  for(const k in hl){const raw=hl[k][side];if(!raw)continue;const sub=esc(raw);const i=html.indexOf(sub);if(i<0)continue;
+    html=html.slice(0,i)+'<mark class="hl" data-k="'+k+'">'+sub+'</mark>'+html.slice(i+sub.length);}
+  return html;
+}
+
+/* ---------- documents ---------- */
+const DOCS = {
+'DOC-01':{short:'Share agreement',type:'Share purchase agreement',file:'股权转让协议_签字版.pdf',lang:'Chinese',src:'Sale of company stake',pages:2,
+summary:'This is the agreement dated 15 March 2021 under which Lin Zhaoyu sold 60% of Shenzhen Lingrui Precision Components Co., Ltd. to Zhujiang Vista Equity Investment Partnership (LP) for RMB 260,000,000, keeping 40%. It proves the origin and size of the sale proceeds and explains why they arrive in two payments: RMB 180,000,000 after registration of the transfer, and a conditional RMB 80,000,000 earn-out tied to audited 2022 net profit of at least RMB 45,000,000.',
+hl:{total:['人民币260,000,000元','RMB 260,000,000'],stake:['60%股权（对应注册资本人民币30,000,000元）','60% of the equity of the Target Company'],t1:['人民币180,000,000元（大写：壹亿捌仟万元整）','RMB 180,000,000 (in words: one hundred and eighty million yuan)'],t2:['人民币80,000,000元（大写：捌仟万元整）','RMB 80,000,000 (in words: eighty million yuan)'],cond:['目标公司2022年度经审计的净利润不低于人民币45,000,000元','audited net profit for the 2022 financial year is not less than RMB 45,000,000']},
+facts:[['Agreement date','15 March 2021','',1,'High'],['Transferor','Lin Zhaoyu (林兆宇)','',1,'High'],['Transferee','Zhujiang Vista Equity Investment Partnership (LP)','',1,'High'],['Stake transferred','60% (RMB 30,000,000 of registered capital)','',1,'High','stake'],['Total consideration','RMB 260,000,000','USD 39,170,507',1,'High','total'],['Tranche 1','RMB 180,000,000, within 30 days after registration','USD 27,950,311 (at 6.44)',2,'High','t1'],['Tranche 2 (earn-out)','RMB 80,000,000, due by 30 June 2023 if condition met','USD 11,220,196 (at 7.13)',2,'High','t2'],['Earn-out condition','Audited 2022 net profit of at least RMB 45,000,000','',2,'High','cond'],['Receiving account','Huachuan Commercial Bank, Shenzhen Futian Branch, 6228 **** **** 3317','',2,'High']],
+orig:`
+# 股权转让协议
+
+协议编号：LR-ZJ-2021-001（示例）
+签署日期：2021年3月15日
+签署地点：广东省深圳市
+
+**转让方（甲方）：** 林兆宇
+身份证号码：4403**********1234
+住所：广东省深圳市福田区［地址已遮盖］
+
+**受让方（乙方）：** 珠江远景股权投资合伙企业（有限合伙）
+统一社会信用代码：91440101SAMPLE5678
+执行事务合伙人：珠江远景资本管理有限公司（委派代表：何志诚）
+
+**目标公司：** 深圳市灵睿精密元件有限公司
+统一社会信用代码：914403007SAMPLE123
+
+鉴于：目标公司成立于2003年8月18日，注册资本为人民币50,000,000元，甲方持有目标公司100%股权。经友好协商，双方就股权转让事宜达成如下协议：
+
+### 第一条 转让标的
+
+1.1 甲方同意将其持有的目标公司60%股权（对应注册资本人民币30,000,000元）转让给乙方，乙方同意受让。
+
+1.2 本次转让完成后，目标公司股权结构如下：
+
+| 股东 | 认缴出资额（人民币元） | 持股比例 |
+|---|---|---|
+| 珠江远景股权投资合伙企业（有限合伙） | 30,000,000 | 60% |
+| 林兆宇 | 20,000,000 | 40% |
+| 合计 | 50,000,000 | 100% |
+
+### 第二条 转让价款
+
+2.1 本次股权转让总价款为人民币260,000,000元（大写：贰亿陆仟万元整）。
+
+2.2 上述价款分两期支付，具体按本协议第三条及第四条执行。
+
+--- Page 2 ---
+
+### 第三条 付款安排
+
+3.1 **第一期价款：** 人民币180,000,000元（大写：壹亿捌仟万元整）。乙方应于本次股权转让在公司登记机关完成变更登记之日起30日内支付。
+
+3.2 **第二期价款（业绩对赌款）：** 人民币80,000,000元（大写：捌仟万元整）。该期价款以本协议第四条约定的条件成就为前提，乙方应于2023年6月30日前支付。
+
+3.3 **收款账户：** 户名：林兆宇；开户行：华川商业银行深圳福田支行；账号：6228 **** **** 3317
+
+3.4 乙方付款时应在附言中注明“股权转让款”及所属期数。
+
+### 第四条 业绩对赌条件
+
+4.1 第二期价款的支付条件为：目标公司2022年度经审计的净利润不低于人民币45,000,000元（大写：肆仟伍佰万元整）。
+
+4.2 上述净利润以双方共同认可的会计师事务所于2023年4月30日前出具的2022年度审计报告为准。
+
+4.3 若目标公司2022年度经审计净利润低于人民币45,000,000元，乙方无需支付第二期价款，甲方不得就此主张任何补偿。
+
+4.4 若条件成就，乙方应在审计报告出具后，且不晚于2023年6月30日，支付第二期价款。
+
+### 第五条 适用法律与争议解决
+
+5.1 本协议的订立、效力、解释及履行适用中华人民共和国法律。
+
+5.2 因本协议引起的争议，双方应友好协商解决；协商不成的，任何一方均可向目标公司住所地有管辖权的人民法院提起诉讼。
+
+| | 甲方（转让方） | 乙方（受让方） |
+|---|---|---|
+| 名称 | 林兆宇 | 珠江远景股权投资合伙企业（有限合伙） |
+| 签字/盖章 | [签名：林兆宇 示例] | [合伙企业印章 示例] |
+| 日期 | 2021年3月15日 | 2021年3月15日 |
+`,
+trans:`
+# Share Transfer Agreement
+
+Agreement No.: LR-ZJ-2021-001 (sample)
+Date of signing: 15 March 2021
+Place of signing: Shenzhen, Guangdong Province
+
+**Transferor (Party A):** Lin Zhaoyu
+ID number: 4403**********1234
+Address: Futian District, Shenzhen [address redacted]
+
+**Transferee (Party B):** Zhujiang Vista Equity Investment Partnership (LP)
+Unified social credit code: 91440101SAMPLE5678
+Executive partner: Zhujiang Vista Capital Management Co., Ltd. (appointed representative: He Zhicheng)
+
+**Target company:** Shenzhen Lingrui Precision Components Co., Ltd.
+Unified social credit code: 914403007SAMPLE123
+
+Whereas: the Target Company was established on 18 August 2003 with registered capital of RMB 50,000,000, and Party A holds 100% of its equity. After friendly negotiation, the parties agree as follows:
+
+### Article 1 Subject of the transfer
+
+1.1 Party A agrees to transfer to Party B 60% of the equity of the Target Company (corresponding to RMB 30,000,000 of registered capital), and Party B agrees to acquire it.
+
+1.2 After completion of the transfer, the shareholding of the Target Company is as follows:
+
+| Shareholder | Subscribed capital (RMB) | Shareholding |
+|---|---|---|
+| Zhujiang Vista Equity Investment Partnership (LP) | 30,000,000 | 60% |
+| Lin Zhaoyu | 20,000,000 | 40% |
+| Total | 50,000,000 | 100% |
+
+### Article 2 Consideration
+
+2.1 The total consideration for the share transfer is RMB 260,000,000 (in words: two hundred and sixty million yuan).
+
+2.2 The consideration is payable in two tranches in accordance with Articles 3 and 4.
+
+--- Page 2 ---
+
+### Article 3 Payment schedule
+
+3.1 **First tranche:** RMB 180,000,000 (in words: one hundred and eighty million yuan). Party B shall pay within 30 days after the change registration of this share transfer is completed with the company registration authority.
+
+3.2 **Second tranche (earn-out payment):** RMB 80,000,000 (in words: eighty million yuan). This tranche is conditional on the condition in Article 4, and Party B shall pay it by 30 June 2023.
+
+3.3 **Receiving account:** Lin Zhaoyu; Huachuan Commercial Bank, Shenzhen Futian Branch; account 6228 **** **** 3317
+
+3.4 When making payment, Party B shall state “share transfer payment” and the tranche number in the payment reference.
+
+### Article 4 Earn-out condition
+
+4.1 The second tranche is payable on condition that the Target Company’s audited net profit for the 2022 financial year is not less than RMB 45,000,000 (in words: forty five million yuan).
+
+4.2 Net profit shall be as stated in the 2022 audit report issued by an accounting firm jointly approved by the parties no later than 30 April 2023.
+
+4.3 If audited 2022 net profit is below RMB 45,000,000, Party B is not required to pay the second tranche and Party A shall not claim any compensation in respect of it.
+
+4.4 If the condition is satisfied, Party B shall pay the second tranche after the audit report is issued and no later than 30 June 2023.
+
+### Article 5 Governing law and dispute resolution
+
+5.1 This Agreement is governed by the laws of the People’s Republic of China.
+
+5.2 Disputes shall be resolved through friendly negotiation; failing that, either party may bring proceedings before the competent People’s Court at the Target Company’s domicile.
+
+| | Party A (Transferor) | Party B (Transferee) |
+|---|---|---|
+| Name | Lin Zhaoyu | Zhujiang Vista Equity Investment Partnership (LP) |
+| Signature or seal | [Signature: Lin Zhaoyu SAMPLE] | [Partnership seal SAMPLE] |
+| Date | 15 March 2021 | 15 March 2021 |
+`},
+'DOC-02':{short:'Business licence',type:'Business licence',file:'营业执照副本.jpg',lang:'Chinese',src:'Business ownership',pages:1,
+summary:'This is the business licence of Shenzhen Lingrui Precision Components Co., Ltd., issued in 2019, before the 2021 share sale. It proves the company exists, was established on 18 August 2003 with RMB 50,000,000 of registered capital, was wholly owned by a natural person, and had Lin Zhaoyu as legal representative.',
+hl:{est:['2003年08月18日','18 August 2003'],rep:['| 法定代表人 | 林兆宇 |','| Legal representative | Lin Zhaoyu |']},
+facts:[['Company name','Shenzhen Lingrui Precision Components Co., Ltd.','',1,'High'],['Registration code','914403007SAMPLE123','',1,'High'],['Company type','Limited liability company, wholly owned by a natural person','',1,'High'],['Legal representative','Lin Zhaoyu','',1,'High'],['Registered capital','RMB 50,000,000','',1,'High'],['Date of establishment','18 August 2003','',1,'High','est'],['Date of issue','9 April 2019','',1,'High']],
+orig:`
+# 营业执照
+
+（副本）
+
+统一社会信用代码：**914403007SAMPLE123**
+
+| 项目 | 内容 |
+|---|---|
+| 名称 | 深圳市灵睿精密元件有限公司 |
+| 类型 | 有限责任公司（自然人独资） |
+| 法定代表人 | 林兆宇 |
+| 注册资本 | 人民币伍仟万元整 |
+| 成立日期 | 2003年08月18日 |
+| 营业期限 | 2003年08月18日 至 长期 |
+| 住所 | 深圳市宝安区新桥街道灵睿工业园A栋1至3层 |
+| 经营范围 | 精密电子元器件、连接器、五金冲压件的研发、生产和销售；电子产品的技术开发与技术咨询；货物及技术进出口。 |
+
+登记机关：［登记机关印章：示例］
+
+发证日期：2019年04月09日
+`,
+trans:`
+# Business Licence
+
+(Duplicate copy)
+
+Unified social credit code: **914403007SAMPLE123**
+
+| Item | Content |
+|---|---|
+| Name | Shenzhen Lingrui Precision Components Co., Ltd. |
+| Type | Limited liability company (wholly owned by a natural person) |
+| Legal representative | Lin Zhaoyu |
+| Registered capital | RMB fifty million (RMB 50,000,000) |
+| Date of establishment | 18 August 2003 |
+| Term of operation | 18 August 2003 to long term |
+| Address | Floors 1 to 3, Building A, Lingrui Industrial Park, Xinqiao Subdistrict, Bao’an District, Shenzhen |
+| Business scope | Research, production and sale of precision electronic components, connectors and metal stamping parts; technical development and consulting for electronic products; import and export of goods and technology. |
+
+Registration authority: [Registration authority seal: SAMPLE]
+
+Date of issue: 9 April 2019
+`},
+'DOC-03':{short:'Statement May 2021',type:'Bank statement, May 2021',file:'statement_may.pdf',lang:'Chinese',src:'Sale of company stake, tranche 1',pages:1,
+summary:'This is Lin Zhaoyu’s personal RMB account statement at Huachuan Commercial Bank for May 2021. It proves receipt of RMB 180,000,000 from Zhujiang Vista Equity Investment Partnership (LP) on 20 May 2021, referenced as tranche 1 of the share transfer under agreement LR-ZJ-2021-001. Other activity is ordinary personal spending and a monthly salary credit.',
+hl:{pay:['180,000,000.00','180,000,000.00'],sal:['85,000.00','85,000.00']},
+facts:[['Account holder','Lin Zhaoyu','',1,'High'],['Bank and branch','Huachuan Commercial Bank, Shenzhen Futian Branch','',1,'High'],['Statement period','1 to 31 May 2021','',1,'High'],['Incoming payment','RMB 180,000,000.00 on 20 May 2021','USD 27,950,311 (at 6.44)',1,'High','pay'],['Remitter','Zhujiang Vista Equity Investment Partnership (LP)','',1,'High'],['Payment reference','Share transfer payment, tranche 1, agreement LR-ZJ-2021-001','',1,'High'],['Monthly salary credit','RMB 85,000.00 from Shenzhen Lingrui','USD 13,199',1,'High','sal']],
+orig:`
+# 华川商业银行 个人账户对账单
+
+| 项目 | 内容 |
+|---|---|
+| 户名 | 林兆宇 |
+| 账号 | 6228 **** **** 3317 |
+| 开户行 | 华川商业银行深圳福田支行 |
+| 币种 | 人民币 |
+| 对账期间 | 2021-05-01 至 2021-05-31 |
+| 期初余额 | 3,286,540.12 |
+
+| 日期 | 摘要 | 对方户名 | 支出 | 存入 | 余额 | 附言 |
+|---|---|---|---|---|---|---|
+| 2021-05-03 | 消费 | 深圳某商场（示例） | 2,860.00 | | 3,283,680.12 | POS消费 |
+| 2021-05-08 | 代扣 | 深圳某燃气水电（示例） | 1,245.30 | | 3,282,434.82 | 水电燃气费 |
+| 2021-05-10 | 代发工资 | 深圳市灵睿精密元件有限公司 | | 85,000.00 | 3,367,434.82 | 2021年4月工资 |
+| 2021-05-15 | 还款 | 华川商业银行信用卡中心 | 38,600.00 | | 3,328,834.82 | 信用卡还款 |
+| 2021-05-20 | 跨行转入 | 珠江远景股权投资合伙企业（有限合伙） | | 180,000,000.00 | 183,328,834.82 | 股权转让款 第一期 灵睿精密60%股权 协议号LR-ZJ-2021-001 |
+| 2021-05-27 | 代扣 | 某保险公司（示例） | 12,800.00 | | 183,316,034.82 | 保险费 |
+
+| 汇总 | 金额 |
+|---|---|
+| 本期支出合计 | 55,505.30 |
+| 本期存入合计 | 180,085,000.00 |
+| 期末余额 | 183,316,034.82 |
+
+对方账户信息（2021-05-20交易）：珠澜银行广州天河支行，账号 4418 **** **** 0926
+
+打印日期：2021-06-02
+［银行业务专用章：华川商业银行深圳福田支行 示例］
+`,
+trans:`
+# Huachuan Commercial Bank: Personal Account Statement
+
+| Item | Content |
+|---|---|
+| Account name | Lin Zhaoyu |
+| Account number | 6228 **** **** 3317 |
+| Branch | Huachuan Commercial Bank, Shenzhen Futian Branch |
+| Currency | RMB |
+| Statement period | 1 May 2021 to 31 May 2021 |
+| Opening balance | 3,286,540.12 |
+
+| Date | Description | Counterparty | Debit | Credit | Balance | Reference |
+|---|---|---|---|---|---|---|
+| 2021-05-03 | Purchase | Shenzhen department store (sample) | 2,860.00 | | 3,283,680.12 | POS purchase |
+| 2021-05-08 | Direct debit | Shenzhen utilities (sample) | 1,245.30 | | 3,282,434.82 | Water, electricity and gas |
+| 2021-05-10 | Payroll credit | Shenzhen Lingrui Precision Components Co., Ltd. | | 85,000.00 | 3,367,434.82 | April 2021 salary |
+| 2021-05-15 | Repayment | Huachuan Commercial Bank Credit Card Centre | 38,600.00 | | 3,328,834.82 | Credit card repayment |
+| 2021-05-20 | Interbank transfer in | Zhujiang Vista Equity Investment Partnership (LP) | | 180,000,000.00 | 183,328,834.82 | Share transfer payment, tranche 1, Lingrui Precision 60% equity, agreement no. LR-ZJ-2021-001 |
+| 2021-05-27 | Direct debit | Insurance company (sample) | 12,800.00 | | 183,316,034.82 | Insurance premium |
+
+| Totals | Amount |
+|---|---|
+| Total debits | 55,505.30 |
+| Total credits | 180,085,000.00 |
+| Closing balance | 183,316,034.82 |
+
+Counterparty account (transaction of 2021-05-20): Zhulan Bank, Guangzhou Tianhe Branch, account 4418 **** **** 0926
+
+Print date: 2 June 2021
+[Bank business seal: Huachuan Commercial Bank, Shenzhen Futian Branch SAMPLE]
+`},
+'DOC-04':{short:'Statement June 2023',type:'Bank statement, June 2023',file:'华川银行流水2023年6月.pdf',lang:'Chinese',src:'Sale of company stake, tranche 2',pages:1,
+summary:'This is Lin Zhaoyu’s personal RMB account statement at Huachuan Commercial Bank for June 2023. It proves receipt of RMB 80,000,000 from Zhujiang Vista Equity Investment Partnership (LP) on 12 June 2023, referenced as the tranche 2 earn-out payment under Article 4 of agreement LR-ZJ-2021-001. It also shows the RMB 16,000,000 income tax payment on that tranche on 21 June 2023.',
+hl:{pay:['80,000,000.00','80,000,000.00'],tax:['16,000,000.00','16,000,000.00']},
+facts:[['Account holder','Lin Zhaoyu','',1,'High'],['Statement period','1 to 30 June 2023','',1,'High'],['Incoming payment','RMB 80,000,000.00 on 12 June 2023','USD 11,220,196 (at 7.13)',1,'High','pay'],['Remitter','Zhujiang Vista Equity Investment Partnership (LP)','',1,'High'],['Payment reference','Share transfer payment, tranche 2, earn-out, Article 4','',1,'High'],['Tax paid on tranche 2','RMB 16,000,000.00 on 21 June 2023','USD 2,244,039 (at 7.13)',1,'High','tax']],
+orig:`
+# 华川商业银行 个人账户对账单
+
+| 项目 | 内容 |
+|---|---|
+| 户名 | 林兆宇 |
+| 账号 | 6228 **** **** 3317 |
+| 开户行 | 华川商业银行深圳福田支行 |
+| 币种 | 人民币 |
+| 对账期间 | 2023-06-01 至 2023-06-30 |
+| 期初余额 | 46,512,388.45 |
+
+| 日期 | 摘要 | 对方户名 | 支出 | 存入 | 余额 | 附言 |
+|---|---|---|---|---|---|---|
+| 2023-06-02 | 代扣 | 深圳某物业管理公司（示例） | 3,620.00 | | 46,508,768.45 | 物业管理费 |
+| 2023-06-06 | 代扣 | 某保险公司（示例） | 12,800.00 | | 46,495,968.45 | 保险费 |
+| 2023-06-12 | 跨行转入 | 珠江远景股权投资合伙企业（有限合伙） | | 80,000,000.00 | 126,495,968.45 | 股权转让款 第二期 业绩对赌款 灵睿精密 协议号LR-ZJ-2021-001 第四条 |
+| 2023-06-20 | 结息 | | | 11,628.34 | 126,507,596.79 | 活期结息 |
+| 2023-06-21 | 缴税 | 税款缴纳（示例） | 16,000,000.00 | | 110,507,596.79 | 个人所得税 财产转让所得 |
+| 2023-06-28 | 还款 | 华川商业银行信用卡中心 | 26,450.00 | | 110,481,146.79 | 信用卡还款 |
+
+| 汇总 | 金额 |
+|---|---|
+| 本期支出合计 | 16,042,870.00 |
+| 本期存入合计 | 80,011,628.34 |
+| 期末余额 | 110,481,146.79 |
+
+对方账户信息（2023-06-12交易）：珠澜银行广州天河支行，账号 4418 **** **** 0926
+
+打印日期：2023-07-03
+［银行业务专用章：华川商业银行深圳福田支行 示例］
+`,
+trans:`
+# Huachuan Commercial Bank: Personal Account Statement
+
+| Item | Content |
+|---|---|
+| Account name | Lin Zhaoyu |
+| Account number | 6228 **** **** 3317 |
+| Branch | Huachuan Commercial Bank, Shenzhen Futian Branch |
+| Currency | RMB |
+| Statement period | 1 June 2023 to 30 June 2023 |
+| Opening balance | 46,512,388.45 |
+
+| Date | Description | Counterparty | Debit | Credit | Balance | Reference |
+|---|---|---|---|---|---|---|
+| 2023-06-02 | Direct debit | Shenzhen property management company (sample) | 3,620.00 | | 46,508,768.45 | Property management fee |
+| 2023-06-06 | Direct debit | Insurance company (sample) | 12,800.00 | | 46,495,968.45 | Insurance premium |
+| 2023-06-12 | Interbank transfer in | Zhujiang Vista Equity Investment Partnership (LP) | | 80,000,000.00 | 126,495,968.45 | Share transfer payment, tranche 2, earn-out payment, Lingrui Precision, agreement no. LR-ZJ-2021-001, Article 4 |
+| 2023-06-20 | Interest | | | 11,628.34 | 126,507,596.79 | Current account interest |
+| 2023-06-21 | Tax payment | Tax payment (sample) | 16,000,000.00 | | 110,507,596.79 | Individual income tax, income from transfer of property |
+| 2023-06-28 | Repayment | Huachuan Commercial Bank Credit Card Centre | 26,450.00 | | 110,481,146.79 | Credit card repayment |
+
+| Totals | Amount |
+|---|---|
+| Total debits | 16,042,870.00 |
+| Total credits | 80,011,628.34 |
+| Closing balance | 110,481,146.79 |
+
+Counterparty account (transaction of 2023-06-12): Zhulan Bank, Guangzhou Tianhe Branch, account 4418 **** **** 0926
+
+Print date: 3 July 2023
+[Bank business seal: Huachuan Commercial Bank, Shenzhen Futian Branch SAMPLE]
+`},
+'DOC-05':{short:'Tax certificate',type:'Income tax payment certificate',file:'完税证明.pdf',lang:'Chinese',src:'Sale of company stake',pages:1,
+summary:'This certificate confirms that Lin Zhaoyu paid RMB 46,000,000 of individual income tax on the sale of 60% of Shenzhen Lingrui: RMB 30,000,000 on 8 June 2021 for tranche 1 and RMB 16,000,000 on 21 June 2023 for tranche 2. It shows the sale was declared and taxed, and the computation reconciles to the RMB 260,000,000 consideration.',
+hl:{t2tax:['16,000,000.00','16,000,000.00'],total:['46,000,000.00','46,000,000.00']},
+facts:[['Taxpayer','Lin Zhaoyu','',1,'High'],['Tax on tranche 1','RMB 30,000,000.00, paid 8 June 2021','USD 4,658,385 (at 6.44)',1,'High'],['Tax on tranche 2','RMB 16,000,000.00, paid 21 June 2023','USD 2,244,039 (at 7.13)',1,'High','t2tax'],['Total tax paid','RMB 46,000,000.00','USD 6,902,424',1,'High','total'],['Cost basis of 60% stake','RMB 30,000,000.00','',1,'High'],['Tax rate','20% of gain','',1,'High']],
+orig:`
+# 税收完税证明（示例）
+
+证明编号：（2023）深南税证 SAMPLE 000417
+填发日期：2023年07月05日
+税务机关：深圳市南澜区税务局（虚构）
+
+| 项目 | 内容 |
+|---|---|
+| 纳税人名称 | 林兆宇 |
+| 纳税人识别号 | 4403**********1234 |
+
+| 原凭证号 | 税种 | 品目名称 | 税款所属时期 | 入（退）库日期 | 实缴（退）金额（人民币元） |
+|---|---|---|---|---|---|
+| SAMPLE-2021-06-0381 | 个人所得税 | 财产转让所得（股权转让，第一期） | 2021-05-01 至 2021-05-31 | 2021-06-08 | 30,000,000.00 |
+| SAMPLE-2023-06-0217 | 个人所得税 | 财产转让所得（股权转让，第二期） | 2023-06-01 至 2023-06-30 | 2023-06-21 | 16,000,000.00 |
+| 合计 | | | | | 46,000,000.00 |
+
+金额合计（大写）：人民币肆仟陆佰万元整
+
+**备注：** 转让深圳市灵睿精密元件有限公司60%股权，受让方珠江远景股权投资合伙企业（有限合伙）。
+
+| 计税明细 | 第一期 | 第二期 |
+|---|---|---|
+| 转让收入 | 180,000,000.00 | 80,000,000.00 |
+| 股权原值 | 30,000,000.00 | 0.00 |
+| 应纳税所得额 | 150,000,000.00 | 80,000,000.00 |
+| 税率 | 20% | 20% |
+| 应纳税额 | 30,000,000.00 | 16,000,000.00 |
+
+［征税专用章：深圳市南澜区税务局 示例］
+`,
+trans:`
+# Tax Payment Certificate (sample)
+
+Certificate No.: (2023) Shen Nan Tax Cert. SAMPLE 000417
+Date of issue: 5 July 2023
+Tax authority: Nanlan District Tax Bureau, Shenzhen (fictional)
+
+| Item | Content |
+|---|---|
+| Taxpayer name | Lin Zhaoyu |
+| Taxpayer ID | 4403**********1234 |
+
+| Original voucher no. | Tax type | Item | Tax period | Date paid | Amount paid (RMB) |
+|---|---|---|---|---|---|
+| SAMPLE-2021-06-0381 | Individual income tax | Income from transfer of property (equity transfer, tranche 1) | 2021-05-01 to 2021-05-31 | 2021-06-08 | 30,000,000.00 |
+| SAMPLE-2023-06-0217 | Individual income tax | Income from transfer of property (equity transfer, tranche 2) | 2023-06-01 to 2023-06-30 | 2023-06-21 | 16,000,000.00 |
+| Total | | | | | 46,000,000.00 |
+
+Total in words: forty six million yuan
+
+**Remarks:** Transfer of 60% equity in Shenzhen Lingrui Precision Components Co., Ltd. to Zhujiang Vista Equity Investment Partnership (LP).
+
+| Tax computation | Tranche 1 | Tranche 2 |
+|---|---|---|
+| Transfer income | 180,000,000.00 | 80,000,000.00 |
+| Original cost of equity | 30,000,000.00 | 0.00 |
+| Taxable income | 150,000,000.00 | 80,000,000.00 |
+| Tax rate | 20% | 20% |
+| Tax payable | 30,000,000.00 | 16,000,000.00 |
+
+[Tax collection seal: Nanlan District Tax Bureau, Shenzhen SAMPLE]
+`},
+'DOC-06':{short:'Dividend records',type:'Dividend summary and audited highlights',file:'分红资料2010至2020.pdf',lang:'Chinese',src:'Dividends',pages:1,
+summary:'This summary, prepared by Shenzhen Lingrui’s finance department, lists the annual dividends paid to Lin Zhaoyu from 2010 to 2020, totalling RMB 52,000,000 after withholding tax. The audited highlights show revenue and net profit growing steadily from 2018 to 2020, which makes the dividend levels plausible.',
+hl:{total:['52,000,000','52,000,000'],profit:['41,560,000','41,560,000']},
+facts:[['Recipient','Lin Zhaoyu (sole shareholder)','',1,'High'],['Period','2010 to 2020','',1,'High'],['Total dividends after tax','RMB 52,000,000','about USD 8,000,000 (at 6.50)',1,'High','total'],['FY2020 revenue','RMB 401,370,000','',1,'High'],['FY2020 net profit','RMB 41,560,000','',1,'High','profit'],['Audit opinion','Unqualified, FY2018 to FY2020','',1,'Medium']],
+orig:`
+# 深圳市灵睿精密元件有限公司
+## 利润分配股东决定汇总及经审计财务摘要（2010年至2020年）
+
+### 一、历年利润分配
+
+公司为自然人独资有限责任公司，股东林兆宇每年以书面股东决定方式作出利润分配。以下金额为公司代扣代缴20%个人所得税后，实际支付至林兆宇个人账户（华川商业银行深圳福田支行，账号 6228 **** **** 3317）的金额。
+
+| 支付年度 | 股东决定日期 | 税后分红金额（人民币元） |
+|---|---|---|
+| 2010 | 2010-04-16 | 2,000,000 |
+| 2011 | 2011-04-15 | 2,500,000 |
+| 2012 | 2012-04-18 | 3,000,000 |
+| 2013 | 2013-04-17 | 3,500,000 |
+| 2014 | 2014-04-16 | 4,000,000 |
+| 2015 | 2015-04-15 | 4,500,000 |
+| 2016 | 2016-04-14 | 5,000,000 |
+| 2017 | 2017-04-18 | 6,000,000 |
+| 2018 | 2018-04-17 | 6,500,000 |
+| 2019 | 2019-04-16 | 7,000,000 |
+| 2020 | 2020-04-21 | 8,000,000 |
+| **合计** | | **52,000,000** |
+
+### 二、经审计财务摘要（人民币元）
+
+| 项目 | 2018年度 | 2019年度 | 2020年度 |
+|---|---|---|---|
+| 营业收入 | 312,450,000 | 358,920,000 | 401,370,000 |
+| 净利润 | 31,280,000 | 36,840,000 | 41,560,000 |
+| 审计意见 | 标准无保留意见 | 标准无保留意见 | 标准无保留意见 |
+
+审计机构：深圳鹏衡会计师事务所（普通合伙）（虚构）
+
+编制：财务部　　编制日期：2026年09月10日
+［公司印章：深圳市灵睿精密元件有限公司 示例］
+`,
+trans:`
+# Shenzhen Lingrui Precision Components Co., Ltd.
+## Summary of Shareholder Profit Distributions and Audited Financial Highlights (2010 to 2020)
+
+### 1. Profit distributions by year
+
+The Company is wholly owned by a natural person. Its shareholder, Lin Zhaoyu, made profit distributions each year by written shareholder decision. The amounts below were paid to Lin Zhaoyu’s personal account (Huachuan Commercial Bank, Shenzhen Futian Branch, account 6228 **** **** 3317) after the Company withheld 20% individual income tax.
+
+| Year paid | Date of shareholder decision | Dividend after tax (RMB) |
+|---|---|---|
+| 2010 | 2010-04-16 | 2,000,000 |
+| 2011 | 2011-04-15 | 2,500,000 |
+| 2012 | 2012-04-18 | 3,000,000 |
+| 2013 | 2013-04-17 | 3,500,000 |
+| 2014 | 2014-04-16 | 4,000,000 |
+| 2015 | 2015-04-15 | 4,500,000 |
+| 2016 | 2016-04-14 | 5,000,000 |
+| 2017 | 2017-04-18 | 6,000,000 |
+| 2018 | 2018-04-17 | 6,500,000 |
+| 2019 | 2019-04-16 | 7,000,000 |
+| 2020 | 2020-04-21 | 8,000,000 |
+| **Total** | | **52,000,000** |
+
+### 2. Audited financial highlights (RMB)
+
+| Item | FY2018 | FY2019 | FY2020 |
+|---|---|---|---|
+| Revenue | 312,450,000 | 358,920,000 | 401,370,000 |
+| Net profit | 31,280,000 | 36,840,000 | 41,560,000 |
+| Audit opinion | Unqualified | Unqualified | Unqualified |
+
+Auditor: Shenzhen Pengheng Certified Public Accountants (fictional)
+
+Prepared by: Finance Department　　Date prepared: 10 September 2026
+[Company seal: Shenzhen Lingrui Precision Components Co., Ltd. SAMPLE]
+`},
+'DOC-07':{short:'Property contract',type:'Property sale contract (phone photo)',file:'IMG_4521.jpg',lang:'Chinese',src:'Property sale',pages:1,photo:true,
+summary:'This is a contract for the sale of Lin Zhaoyu’s residential flat in Futian District, Shenzhen, to Chen Siyuan in April 2022 for RMB 20,000,000, paid into his own Huachuan account. The image is a blurred phone photo, so the unit number, floor area, title number and balance release date cannot be read reliably.',
+hl:{price:['20,000,000','20,000,000'],acct:['华川商业银行深圳福田支行，账号 6228 **** **** 3317','Huachuan Commercial Bank, Shenzhen Futian Branch, account 6228 **** **** 3317']},
+facts:[['Seller','Lin Zhaoyu','',1,'High'],['Buyer','Chen Siyuan','',1,'High'],['Sale price','RMB 20,000,000','USD 2,985,075 (at 6.70)',1,'High','price'],['Receiving account','Huachuan Commercial Bank, 6228 **** **** 3317','',1,'Medium','acct'],['Unit number','28██ (partly illegible)','',1,'Low'],['Gross floor area','1██.4 sq m (partly illegible)','',1,'Low'],['Date of signing','26 April 2022 (inferred, one digit blurred)','',1,'Medium'],['Balance release date','2022, day and month illegible','',1,'Low']],
+orig:`
+# 深圳市房地产买卖合同（存量房）
+
+合同编号：深（2022）存买字第 SAMPLE-██17 号
+
+**卖方（甲方）：** 林兆宇　身份证号码：4403**********1234
+**买方（乙方）：** 陈思远　身份证号码：4405**********5678
+
+### 第一条 房屋基本情况
+
+| 项目 | 内容 |
+|---|---|
+| 房屋坐落 | 深圳市福田区香蜜湖路88号澜庭花园3栋28██ |
+| 建筑面积 | 1██.4 平方米 |
+| 用途 | 住宅 |
+| 不动产权证书号 | 粤（20██）深圳市不动产权第 SAMPLE██ 号 |
+
+### 第二条 成交价格
+
+成交总价：人民币 **20,000,000** 元（大写：贰仟万元整）。
+
+### 第三条 付款方式
+
+3.1 乙方于本合同签订当日支付定金人民币1,000,000元。
+3.2 余款人民币19,000,000元存入资金监管账户，于房屋过户登记完成后划转至甲方账户，预计划转日期：2022年0█月██日。
+3.3 甲方收款账户：华川商业银行深圳福田支行，账号 6228 **** **** 3317。
+
+### 第四条 交房
+
+甲方应于过户登记完成后15日内向乙方交付房屋。
+
+甲方（签字）：[签名：林兆宇 示例]　　乙方（签字）：[签名：陈思远 示例]
+签订日期：2022年4月2█日
+`,
+trans:`
+# Shenzhen Real Estate Sale Contract (Existing Property)
+
+Contract No.: Shen (2022) Existing Sale No. SAMPLE-██17
+
+**Seller (Party A):** Lin Zhaoyu　ID number: 4403**********1234
+**Buyer (Party B):** Chen Siyuan　ID number: 4405**********5678
+
+### Article 1 Property details
+
+| Item | Content |
+|---|---|
+| Location | Unit 28██, Building 3, Lanting Garden, 88 Xiangmihu Road, Futian District, Shenzhen |
+| Gross floor area | 1██.4 square metres |
+| Use | Residential |
+| Title certificate no. | Yue (20██) Shenzhen Real Estate Title No. SAMPLE██ |
+
+### Article 2 Price
+
+Total price: RMB **20,000,000** (in words: twenty million yuan).
+
+### Article 3 Payment
+
+3.1 Party B pays a deposit of RMB 1,000,000 on the day this contract is signed.
+3.2 The balance of RMB 19,000,000 is placed in a funds supervision account and released to Party A after the transfer of title is registered. Expected release date: ██ 0█ 2022.
+3.3 Party A’s receiving account: Huachuan Commercial Bank, Shenzhen Futian Branch, account 6228 **** **** 3317.
+
+### Article 4 Handover
+
+Party A shall hand over the property within 15 days after registration of the title transfer.
+
+Party A (signature): [Signature: Lin Zhaoyu SAMPLE]　　Party B (signature): [Signature: Chen Siyuan SAMPLE]
+Date of signing: 2█ April 2022 (the digit “6” is blurred)
+`},
+'DOC-08':{short:'Employer letter',type:'Employer letter',file:'Employment letter_final.pdf',lang:'English',src:'Salary',pages:1,en:true,
+summary:'This letter from Shenzhen Lingrui’s HR Director confirms that Lin Zhaoyu was Chairman from 18 August 2003 to 30 June 2021 and received cumulative gross salary and bonuses of about RMB 13,000,000. It also confirms he still holds 40% of the company after the share sale.',
+hl:{total:['approximately RMB 13,000,000','approximately RMB 13,000,000'],role:['Chairman and legal representative from 18 August 2003 to 30 June 2021','Chairman and legal representative from 18 August 2003 to 30 June 2021']},
+facts:[['Employee','Lin Zhaoyu','',1,'High'],['Role','Chairman and legal representative','',1,'High','role'],['Period of service','18 August 2003 to 30 June 2021','',1,'High','role'],['Cumulative salary and bonuses','RMB 13,000,000 (approximate)','about USD 2,000,000 (at 6.50)',1,'High','total'],['Current relationship','40% shareholder, no executive role','',1,'High'],['Signatory','Zhou Wenjing, HR Director','',1,'High']],
+orig:`
+**Shenzhen Lingrui Precision Components Co., Ltd.**
+Building A, Lingrui Industrial Park, Xinqiao Subdistrict, Bao’an District, Shenzhen, PRC
+
+15 September 2026
+
+To whom it may concern
+
+**Re: Confirmation of employment, Mr. Lin Zhaoyu**
+
+We confirm that Mr. Lin Zhaoyu founded Shenzhen Lingrui Precision Components Co., Ltd. (the “Company”) and served as its Chairman and legal representative from 18 August 2003 to 30 June 2021.
+
+During this period, the Company paid Mr. Lin cumulative gross salary and bonuses of approximately RMB 13,000,000, as follows:
+
+| Period | Gross salary and bonuses (RMB) |
+|---|---|
+| August 2003 to December 2010 | 2,600,000 |
+| January 2011 to December 2016 | 4,500,000 |
+| January 2017 to June 2021 | 5,900,000 |
+| **Total** | **13,000,000** |
+
+All amounts were paid to Mr. Lin’s personal account at Huachuan Commercial Bank, Shenzhen Futian Branch, after withholding of individual income tax.
+
+Mr. Lin stepped down from all executive roles on 30 June 2021, following the sale of 60% of the Company’s equity to Zhujiang Vista Equity Investment Partnership (LP). He remains a 40% shareholder.
+
+Yours faithfully,
+
+[Signature: Zhou Wenjing SAMPLE]
+Zhou Wenjing, HR Director
+[Company seal: Shenzhen Lingrui Precision Components Co., Ltd. SAMPLE]
+`},
+'DOC-09':{short:'News article',type:'News article (screening result)',file:'adverse_media_hit_01.pdf',lang:'Chinese',src:'Screening only',pages:1,
+summary:'This 2019 local news report covers a Fuzhou real estate agent named Lin Zhaoyu, aged 38, who was fined RMB 50,000 in an illegal fundraising case linked to a property agency. Only the name matches the client: age, city, occupation and company all differ.',
+hl:{who:['林兆宇，男，38岁，福州人','Lin Zhaoyu, male, 38, from Fuzhou']},
+facts:[['Publication','Rongcheng Today, 14 November 2019','',1,'High'],['Subject','Lin Zhaoyu, 38, Fuzhou','',1,'High','who'],['Occupation','Real estate agent','',1,'High'],['Employer','Fuzhou Lanshe Real Estate Brokerage Co., Ltd.','',1,'High'],['Penalty','Fine of RMB 50,000 plus compensation order','',1,'High']],
+orig:`
+**榕城今日讯（虚构媒体）　2019年11月14日**
+
+# 福州一房产中介涉非法集资案宣判　经纪人被处罚金
+
+本报讯（记者 郑雅琳）11月13日，福州市岚江区人民法院对一起非法吸收公众存款案作出一审判决。
+
+被告人林兆宇，男，38岁，福州人，案发前系福州岚舍房产经纪有限公司房产经纪人。经查，2017年至2018年间，林兆宇伙同该公司其他人员，以“购房投资、高额返利”为名，向社会不特定人员吸收资金约人民币860万元。
+
+法院认定其行为构成非法吸收公众存款罪，判处罚金人民币5万元，并责令退赔集资参与人损失。福州岚舍房产经纪有限公司已于2019年初停业。
+
+法官提醒市民，对承诺高额回报的房产投资项目应提高警惕，谨防上当受骗。
+`,
+trans:`
+**Rongcheng Today (fictional outlet)　14 November 2019**
+
+# Fuzhou property agency fundraising case sentenced: agent fined
+
+Staff report (reporter Zheng Yalin): On 13 November, the Lanjiang District People’s Court in Fuzhou delivered a first instance judgment in a case of illegally taking deposits from the public.
+
+The defendant, Lin Zhaoyu, male, 38, from Fuzhou, was a real estate agent at Fuzhou Lanshe Real Estate Brokerage Co., Ltd. Between 2017 and 2018, Lin Zhaoyu and other staff raised about RMB 8.6 million from members of the public, promising “property investment with high returns”.
+
+The court imposed a fine of RMB 50,000 and ordered him to compensate the participants for their losses. Fuzhou Lanshe Real Estate Brokerage Co., Ltd. ceased operations in early 2019.
+
+The judge reminded the public to be cautious about property investment schemes that promise high returns.
+`}
+};
+DOCS['DOC-08'].trans = DOCS['DOC-08'].orig;
+
+const BATCH1=['DOC-01','DOC-03','DOC-05','DOC-02','DOC-06','DOC-07','DOC-08'];
+
+/* ---------- checklists and profiles ---------- */
+const CL_LIN=[
+ {src:'Sale of company stake',item:'Share purchase agreement',req:true,why:'Shows the origin, size and terms of the sale proceeds.',alt:'Registry record of the transfer plus the buyer’s confirmation letter.',docs:['DOC-01']},
+ {src:'Sale of company stake',item:'Bank statements showing all payments received from the buyer',req:true,why:'Proves the money was actually received into the client’s own account.',alt:'Bank confirmation letter for each payment.',docs:['DOC-03','DOC-04']},
+ {src:'Sale of company stake',item:'Tax payment certificate for the sale',req:true,why:'Shows the sale was declared and taxed.',alt:'Tax filing record from the tax bureau.',docs:['DOC-05']},
+ {src:'Business ownership and dividends',item:'Business licence of the company',req:true,why:'Confirms the company exists and the client owned it.',alt:'Registry extract.',docs:['DOC-02']},
+ {src:'Business ownership and dividends',item:'Dividend records and audited financials (3 years)',req:true,why:'Shows dividends came from genuine company profits.',alt:'Bank statements showing dividend receipts.',docs:['DOC-06']},
+ {src:'Business ownership and dividends',item:'Evidence of how the business was first funded (seed capital)',req:false,why:'Compliance must assess where the money to start the business came from.',alt:'Your explanation from the client meeting, if the amount is small relative to current wealth.',docs:[]},
+ {src:'Property sale',item:'Property sale contract and original purchase records',req:true,why:'Shows the purchase and sale prices, so the capital gain can be assessed.',alt:'Title deed or land registry extract showing purchase date and price.',docs:['DOC-07']},
+ {src:'Employment',item:'Employer letter or tax records',req:false,why:'Supports salary as a secondary source of wealth.',alt:'Annual income tax records, or a salary benchmark.',docs:['DOC-08']}
+];
+const CL_SAN=[
+ {src:'Inheritance',item:'Death certificate and grant of probate or will',req:true,why:'Establishes the client’s legal right to the inherited assets.',alt:'Solicitor’s letter on letterhead.'},
+ {src:'Inheritance',item:'Share transfer records from the estate to the client',req:true,why:'Shows the inherited shares actually passed to the client.',alt:'Updated shareholder register.'},
+ {src:'Inheritance',item:'Family holding company structure chart and shareholder register',req:true,why:'Shows what the client owns and through which entities.',alt:'Registry extracts for each entity.'},
+ {src:'Inheritance',item:'Evidence of how the family wealth was created (the donor’s source of wealth)',req:true,key:true,why:'For an inheritor, source of wealth also covers how the donor built the wealth, not only that it was passed down. This item is often missed.',alt:'Father’s company records, audited financials or credible media coverage.'},
+ {src:'Dividends',item:'Dividend records and bank statements',req:true,why:'Shows ongoing income from the family holding company.',alt:'Holding company dividend resolutions.'},
+ {src:'Gifts',item:'Gift letters with bank transfer records',req:false,why:'Supports gifts from family as a minor source.',alt:'Your attestation, if you have known the client for 3 years or more.'}
+];
+const PROFILES={
+ lin:{name:'Lin Zhaoyu (林兆宇)',nat:'China',res:'Singapore (since 2022)',type:'First generation entrepreneur',pep:'No',nw:'SGD 61M (excluding remaining 40% company stake)',inv:'SGD 13.5M, discretionary portfolio',
+  src:[['Sale of company stake','SGD 44M','2021 to 2023'],['Business income (dividends)','SGD 11M','2010 to 2020'],['Property sale','SGD 4M','2022'],['Employment (salary)','SGD 3M','2003 to 2021']],
+  biz:'Manufacturing: precision electronic components',ctry:'China (Shenzhen)',yrs:'18 years as Chairman (2003 to 2021); now a 40% shareholder',
+  career:'1995 to 2003: sales manager at an electronics factory in Shenzhen. 2003: founded Shenzhen Lingrui Precision Components. 2003 to 2021: Chairman and legal representative. 2021: sold 60% to a private equity fund and stepped down. 2022: moved to Singapore.',
+  tx:'Account funding, investment, fund subscription, dividend receipt, FX conversion',freq:'Monthly',aum:'SGD 13.5M',sof:'Transfer from his Singapore bank account, holding share sale proceeds remitted from China in 2022 and 2023',
+  notes:'Met on 6 Oct 2026, referred by an existing client. Worked as a sales manager at an electronics factory from 1995 to 2003. Founded Shenzhen Lingrui in 2003 with about RMB 1.5M of savings and a RMB 1M loan from his brother, repaid by 2006. Sold 60% to a private equity fund in 2021, kept 40%. Moved to Singapore in 2022 with family. Wants a discretionary mandate, moderate risk.'},
+ san:{name:'Putri Santoso',nat:'Indonesia',res:'Surabaya, Indonesia',type:'Second generation inheritor',pep:'No',nw:'SGD 27M',inv:'SGD 6.75M, discretionary portfolio',
+  src:[['Inheritance (shares in family holding company)','SGD 19M','2020'],['Business income (dividends)','SGD 6.75M','2020 to 2025'],['Gifts from family','SGD 1.35M','2015 to 2019']],
+  biz:'Property and retail (family group)',ctry:'Indonesia',yrs:'6 years as a director of the family holding company',
+  career:'Joined the family group after university in 2014. Director of the holding company since 2020.',
+  tx:'Account funding, investment, dividend receipt',freq:'Quarterly',aum:'SGD 6.75M',sof:'Dividends from the family holding company, held at an Indonesian bank',
+  notes:'Father founded a property and retail group in Surabaya in 1985 and passed away in 2020. She inherited shares in the family holding company and receives annual dividends. Wants to diversify outside Indonesia.'}
+};
+const MSG_EN=`Dear Mr. Lin,
+
+Thank you for taking the time to meet last week. As part of opening your account, we need to understand how your wealth was built. Could you please share the following? Copies or clear photos are fine.
+
+Sale of Shenzhen Lingrui shares: the share transfer agreement, bank statements showing all payments received from the buyer, and the tax payment certificate.
+
+The company: its business licence, dividend records and audited financial statements for 2010 to 2020, and anything showing how you first funded the business in 2003, if available.
+
+Property: the sale contract for the Shenzhen property sold in 2022 and, if available, the original purchase contract.
+
+Salary (if available): an employer letter or tax records.
+
+If anything is hard to obtain, just let me know and I’ll suggest an alternative. Everything you share is kept strictly confidential.
+
+Best regards,
+Sarah Tan`;
+const MSG_ZH=`林先生您好：
+
+感谢您上周抽空与我会面。根据开户要求，我们需要了解您财富的来源。烦请提供以下文件，复印件或清晰照片均可：
+
+灵睿精密股权转让：股权转让协议、显示收到买方全部款项的银行流水及完税证明。
+
+公司：营业执照、2010年至2020年的分红记录及经审计的财务报表；如有，请提供2003年创业初始资金来源的相关证明。
+
+房产：2022年出售深圳房产的买卖合同；如有，请一并提供当初的购房合同。
+
+薪酬（如有）：雇主证明信或个人所得税记录。
+
+如某些文件不便提供，请告知，我会建议替代文件。您提供的所有资料将严格保密。
+
+祝好，
+Sarah Tan`;
+const FU_EN='Dear Mr. Lin, thank you for the documents. Just one more item please: your Huachuan Commercial Bank statement for June 2023, showing the second payment of RMB 80,000,000 from Zhujiang Vista. Best regards, Sarah';
+const FU_ZH='林先生您好，感谢您提供的文件。还需补充一份：华川商业银行2023年6月的对账单，显示收到珠江远景支付的第二期款项人民币80,000,000元。谢谢！Sarah';
+const SEED_TEXT='Per my meeting with Mr. Lin on 6 Oct 2026: he funded the initial paid-in capital of about RMB 2.5M in 2003 from roughly RMB 1.5M of savings as a sales manager at an electronics factory (1995 to 2003) and a RMB 1M loan from his brother, repaid by 2006. The remaining registered capital was paid in from company profits by 2009. The seed capital is under 1% of current wealth, so it is assessed as immaterial and explained rather than corroborated.';
+const PROP_TEXT='The property sale is about 7% of total wealth. The sale contract shows the price and payment to the client’s own account, which is sufficient given materiality. The client will provide the purchase contract if he can locate it.';
+const RATIONALE='Declared wealth of about SGD 61M is fully explained by documented sources, mainly the 2021 sale of a 60% company stake. Target company and buyer verified on registry. Seed capital assessed as immaterial and explained by the RM. Adverse media hit confirmed as a different person. Part F completed with no unresolved items.';
+const MEDIA_NOTE='Different person. Age, city, occupation and company do not match.';
+const CERTS=['Identity verification','KYC accuracy','Signature verification','Capacity of account opening','AML/CFT awareness','Prohibited relationships','Source of wealth due diligence','Facilitation of bank due diligence','Risk disclosures','Investment strategy','Disclosure of material changes'];
+
+/* ---------- state ---------- */
+function fresh(){return{
+  role:'rm',rmView:'home',ccView:'queue',menu:false,
+  profile:null,generated:false,clProfile:'lin',msgLang:'en',checklistSent:false,
+  uploaded:[],uploading:false,tick:0,
+  fu:'none',fuLang:'en',fuUploading:false,doc04:false,
+  seed:false,seedOpen:false,seedText:SEED_TEXT,
+  ackProp:false,ackPropOpen:false,ackPropText:PROP_TEXT,
+  certChecked:false,submitted:false,
+  ccOpened:false,ccTab:'partf',mediaCleared:false,mediaNote:MEDIA_NOTE,partF:false,verified:{},
+  asked:false,thinking:false,answered:false,resolved:false,forwarded:false,rmReplied:false,
+  decChoice:'approve',rationale:RATIONALE,decision:null,
+  viewer:null,drawer:null,drawerTab:'thread',modal:null,toast:null
+}}
+let st=fresh();
+let timers=[];
+function later(fn,ms){const t=setTimeout(fn,ms);timers.push(t);return t}
+function clearTimers(){timers.forEach(clearTimeout);timers=[];}
+function toast(msg){st.toast=msg;render();later(()=>{st.toast=null;render()},3400)}
+
+const gapOpen=()=>!st.doc04;
+function received(item){return item.docs.some(d=>st.uploaded.includes(d))}
+const NCL=CL_LIN.length;
+function rmStage(){
+  if(st.decision==='approve')return['Approved','ok'];
+  if(st.decision==='return')return['Returned by compliance','warn'];
+  if(st.decision==='escalate')return['Escalated','info'];
+  if(st.submitted)return['Under compliance review','info'];
+  if(st.uploaded.length)return['Drafting','neu'];
+  if(st.checklistSent)return['Collecting documents','neu'];
+  if(st.profile)return['Profiling','neu'];
+  return['New','ok'];
+}
+function rmLinView(){
+  if(st.submitted||st.uploaded.length)return'report';
+  if(st.checklistSent)return'upload';
+  if(st.generated)return'checklist';
+  return'profile';
+}
+
+/* ---------- small renderers ---------- */
+function cite(d,p,k){return `<button class="cite" data-act="openDoc" data-doc="${d}" data-k="${k||''}">${I.doc}${DOCS[d].short}, p.${p}</button>`}
+function pill(t,c){return `<span class="pill ${c}">${t}</span>`}
+function conf(c){return pill(c,c==='High'?'ok':c==='Medium'?'warn':'crit')}
+function hint(t){return `<div class="hint" role="note">${I.info}<div>${t}</div></div>`}
+function kvt(rows){return `<div class="tw"><table class="tbl kvt"><tbody>${rows.map(r=>`<tr><td class="muted" style="width:34%">${r[0]}</td><td>${r[1]}</td></tr>`).join('')}</tbody></table></div>`}
+
+function topbar(){
+  const rm=st.role==='rm';
+  const bellCount=(st.forwarded&&!st.rmReplied)?1:0;
+  return `<header class="top">
+    <div class="logo">${LOGO}<span>SourceWise</span></div>
+    <span class="demo-tag">Demo</span>
+    <span class="credit">Prototype by the 2026 NUS MBA team</span>
+    <div class="spacer"></div>
+    ${rm?`<button class="bell" data-act="bell" aria-label="Notifications">${I.bell}${bellCount?`<span class="dot">${bellCount}</span>`:''}</button>`:''}
+    <div class="who">
+      <button class="who-btn" data-act="menu" aria-haspopup="true" aria-expanded="${st.menu}">
+        <span class="av ${rm?'s':'k'}">${rm?'S':'K'}</span>${rm?'Sarah (RM)':'Kevin (Compliance)'} ${I.caret}
+      </button>
+      ${st.menu?`<div class="menu" role="menu">
+        <div class="mh">Switch account</div>
+        <button data-act="role" data-r="rm"><span class="av s">S</span>Sarah (RM)${rm?'<span class="chk">✓</span>':''}</button>
+        <button data-act="role" data-r="cc"><span class="av k">K</span>Kevin (Compliance)${!rm?'<span class="chk">✓</span>':''}</button>
+        <div class="sep"></div>
+        <div class="mh">Jump to</div>
+        <button data-act="jump" data-a="1">Act 1: Profile and checklist</button>
+        <button data-act="jump" data-a="2">Act 2: Documents and report</button>
+        <button data-act="jump" data-a="3">Act 3: Compliance review</button>
+        <div class="sep"></div>
+        <button data-act="about">About this demo</button>
+        <button data-act="askReset" class="danger">Reset demo</button>
+      </div>`:''}
+    </div>
+  </header>`;
+}
+
+function stepper(cur){
+  const steps=[['profile','Profile',true],['checklist','Checklist',st.generated],['upload','Documents',st.checklistSent],['report','Certification Letter',st.uploaded.length>0]];
+  const order=steps.map(s=>s[0]);const ci=order.indexOf(cur);
+  return `<nav class="steps" aria-label="Case steps">${steps.map((s,i)=>`<button class="step ${s[0]===cur?'on':''} ${i<ci?'done':''}" data-act="go" data-v="${s[0]}" ${s[2]?'':'disabled'}><span class="n">${i<ci?I.check:i+1}</span>${s[1]}</button>`).join('')}</nav>`;
+}
+
+/* ---------- RM screens ---------- */
+function rmHome(){
+  const [stage,cls]=rmStage();
+  const got=CL_LIN.filter(received).length;
+  const prog=st.checklistSent?`${got} of ${NCL}`:'Not started';
+  let next='Create profile';
+  if(st.decision==='approve')next='None';else if(st.submitted)next='Waiting for compliance';else if(st.uploaded.length)next='Complete Certification Letter';else if(st.checklistSent)next='Upload documents';else if(st.generated)next='Send checklist';else if(st.profile)next='Generate checklist';
+  if(st.forwarded&&!st.rmReplied)next='Answer compliance question';
+  return `${hint('Open Lin Zhaoyu’s case to start.')}
+  <div class="pagehead"><div><h1>My clients</h1><p class="muted">Onboarding cases you manage</p></div></div>
+  <div class="panel"><div class="tw"><table class="tbl">
+    <thead><tr><th>Client</th><th>Stage</th><th>Checklist</th><th>Last updated</th><th>Next action</th></tr></thead>
+    <tbody>
+      <tr class="click ${stage==='New'?'new':''}" data-act="openLin" tabindex="0"><td><strong>Lin Zhaoyu</strong><div class="fsub">SW-2026-0142</div></td><td>${pill(stage,cls)}</td><td>${prog}</td><td>22 Oct 2026</td><td>${next}</td></tr>
+      <tr><td>Priya Raman<div class="fsub">SW-2026-0137</div></td><td>${pill('Collecting documents','neu')}</td><td>6 of 9</td><td>20 Oct 2026</td><td>Chase 3 documents</td></tr>
+      <tr><td>Hiroshi Sato<div class="fsub">SW-2026-0131</div></td><td>${pill('Under compliance review','info')}</td><td>8 of 8</td><td>18 Oct 2026</td><td>Waiting for compliance</td></tr>
+      <tr><td>Tan Wei Ming<div class="fsub">SW-2026-0118</div></td><td>${pill('Approved','ok')}</td><td>9 of 9</td><td>2 Oct 2026</td><td>None</td></tr>
+    </tbody></table></div></div>`;
+}
+
+function rmProfile(){
+  const p=st.profile?PROFILES[st.profile]:null;
+  const f=(l,v)=>`<div class="field"><label>${l}</label><div class="v ${v?'':'empty'}">${v?esc(v):'Not entered'}</div></div>`;
+  return `${stepper('profile')}
+  ${hint(p?'Profile loaded. It follows the background and purpose sections of the Certification Letter. Generate the checklist next.':'Use “Demo: load profile” to fill the form instantly, then generate the checklist.')}
+  <div class="pagehead"><div><h1>Client profile</h1><p class="muted">What you learned about the client in your first meeting</p></div>
+    <div class="row"><label class="small muted" for="lp">Demo: load profile</label>
+      <select id="lp" class="inp" data-chg="loadProfile"><option value="">Choose a profile</option><option value="lin" ${st.profile==='lin'?'selected':''}>Mr. Lin Zhaoyu</option><option value="san" ${st.profile==='san'?'selected':''}>Ms. Putri Santoso</option></select></div></div>
+  <div class="panel pad" style="margin-bottom:16px"><h2>Client identification</h2><div class="fgrid">
+    ${f('Full legal name',p&&p.name)}${f('Nationality',p&&p.nat)}${f('Residence',p&&p.res)}${f('Client type',p&&p.type)}${f('Politically exposed person',p&&p.pep)}</div></div>
+  <div class="panel pad" style="margin-bottom:16px"><h2>Professional background</h2><div class="fgrid" style="margin-bottom:14px">${f('Nature of business or industry',p&&p.biz)}${f('Country of employment or business',p&&p.ctry)}${f('Years in current role',p&&p.yrs)}</div>
+    ${f('Career summary since earliest working history',p&&p.career)}</div>
+  <div class="panel pad" style="margin-bottom:16px"><h2>Purpose of account</h2><div class="fgrid" style="margin-bottom:14px">${f('Expected transaction types',p&&p.tx)}${f('Expected frequency',p&&p.freq)}${f('Assets under management',p&&p.aum)}</div>
+    ${f('Source of initial funds for this account',p&&p.sof)}</div>
+  <div class="panel pad" style="margin-bottom:16px"><h2>Wealth picture</h2><div class="fgrid" style="margin-bottom:16px">${f('Estimated net worth',p&&p.nw)}${f('Expected investment',p&&p.inv)}</div>
+    <div class="tw"><table class="tbl"><thead><tr><th>Wealth source</th><th>Approx. amount</th><th>Period</th></tr></thead><tbody>
+    ${p?p.src.map(s=>`<tr><td>${s[0]}</td><td>${s[1]}</td><td>${s[2]}</td></tr>`).join(''):`<tr><td colspan="3" class="muted">No wealth sources added yet</td></tr>`}</tbody></table></div></div>
+  <div class="panel pad" style="margin-bottom:20px"><h2>Meeting notes</h2><div class="field"><div class="v ${p?'':'empty'}" style="min-height:70px">${p?esc(p.notes):'Not entered'}</div></div></div>
+  <div class="row"><button class="btn pri" data-act="generate" ${p?'':'disabled'}>Generate checklist</button></div>`;
+}
+
+function rmChecklist(){
+  const lin=st.clProfile==='lin';const cl=lin?CL_LIN:CL_SAN;
+  const groups=[...new Set(cl.map(c=>c.src))];
+  const msg=st.msgLang==='en'?MSG_EN:MSG_ZH;
+  return `${stepper('checklist')}
+  ${hint(lin?'Try switching to Ms. Santoso to see how the checklist adapts to a different client. Then copy the message and mark it as sent.':'For an inheritor, the checklist asks how the donor originally built the wealth. Switch back to Mr. Lin to continue the demo.')}
+  <div class="pagehead"><div><h1>Document checklist</h1><p class="muted">Tailored to ${lin?'Mr. Lin’s':'Ms. Santoso’s'} wealth sources and the evidence the Certification Letter asks for</p></div>
+    <div class="seg-toggle" role="group" aria-label="Client"><button class="${lin?'on':''}" data-act="clp" data-p="lin">Mr. Lin</button><button class="${!lin?'on':''}" data-act="clp" data-p="san">Ms. Santoso</button></div></div>
+  <div class="grid2">
+    <div class="panel pad">
+      ${groups.map(g=>`<div class="cl-group"><h3>${g}</h3>${cl.filter(c=>c.src===g).map(c=>`
+        <details class="ci ${c.key?'key':''}" ${c.key?'open':''}><summary><span class="box"></span><span>${c.item}</span>${c.req?'':pill('If available','neu')}${c.key?pill('Often missed','warn'):''}<span class="caret">${I.chev}</span></summary>
+        <div class="body"><p><strong>Why it’s needed.</strong> ${c.why}</p><p style="margin:0"><strong>Acceptable alternative.</strong> ${c.alt}</p></div></details>`).join('')}</div>`).join('')}
+    </div>
+    <div class="panel pad">
+      <div class="row" style="margin-bottom:12px"><h2 style="margin:0">Message to client</h2><div class="seg-toggle right"><button class="${st.msgLang==='en'?'on':''}" data-act="msgLang" data-l="en">English</button><button class="${st.msgLang==='zh'?'on':''}" data-act="msgLang" data-l="zh">中文</button></div></div>
+      ${lin?`<div class="msg">${esc(msg)}</div>
+      <div class="row" style="margin-top:14px"><button class="btn sec sm" data-act="copy" data-t="msg">Copy message</button><button class="btn sec sm" data-act="exportPdf">Export PDF</button>
+      <button class="btn pri sm right" data-act="markSent" ${st.checklistSent?'disabled':''}>${st.checklistSent?'Sent':'Mark as sent'}</button></div>
+      <p class="small muted" style="margin-top:10px">You send this through your usual channel, such as email or WeChat. SourceWise never contacts the client.</p>`
+      :`<div class="empty">The demo continues with Mr. Lin. Switch back to send his checklist.</div>`}
+    </div>
+  </div>`;
+}
+
+function rmUpload(){
+  const done=st.uploaded.length>0&&!st.uploading;
+  const statusOf=i=>Math.max(0,Math.min(4,st.tick-i));
+  const labels=['Queued','Reading','Classifying','Extracting facts','Done'];
+  const got=CL_LIN.filter(received).length;
+  let rows='';
+  if(st.uploading||done){
+    const list=st.uploading?BATCH1:st.uploaded;
+    rows=list.map((d,i)=>{const D=DOCS[d];const s=st.uploading?statusOf(i):4;const ci=CL_LIN.find(c=>c.docs.includes(d));
+      const confv=d==='DOC-07'?'Medium':'High';
+      return `<tr class="${s===4?'click':''}" ${s===4?`data-act="openDoc" data-doc="${d}"`:''}>
+        <td><div class="fname">${esc(D.file)}</div></td>
+        <td>${s===4?esc(D.type):`<span class="status">${s<4?'<span class="spin"></span>':''}${labels[s]}</span>`}</td>
+        <td>${s===4?D.lang:''}</td>
+        <td>${s===4?esc(ci?ci.item:''):''}</td>
+        <td>${s===4?conf(confv)+(d==='DOC-07'?'<div class="fsub" style="margin-top:4px">Some fields illegible</div>':''):''}</td></tr>`}).join('');
+  }
+  return `${stepper('upload')}
+  ${hint(done?'Open any document to see the original beside its English reading. Then continue to the Certification Letter.':'Mr. Lin has sent his documents to you. Upload them and SourceWise will sort and read them.')}
+  <div class="pagehead"><div><h1>Documents</h1><p class="muted">Upload what the client sent you. SourceWise maps each file to the checklist.</p></div>
+    ${done?`<button class="btn pri" data-act="go" data-v="report">Continue to Certification Letter</button>`:''}</div>
+  <div class="grid2">
+    <div>
+      ${(!st.uploading&&!done)?`<div class="drop">${I.up}<p style="margin:8px 0 4px;font-weight:600">7 files received from Mr. Lin by email and WeChat</p><p class="small muted">Photos, scans and PDFs, mostly in Chinese</p><button class="btn pri" data-act="upload" style="margin-top:8px">Upload client files</button></div>`
+      :`<div class="panel"><div class="tw"><table class="tbl"><thead><tr><th>Client file name</th><th>Detected type</th><th>Language</th><th>Mapped to</th><th>Confidence</th></tr></thead><tbody>${rows}</tbody></table></div></div>`}
+    </div>
+    <div class="panel pad">
+      <div class="row" style="margin-bottom:8px"><h2 style="margin:0">Checklist</h2><span class="right small muted">${got} of ${NCL} received</span></div>
+      <div class="prog" style="margin-bottom:14px"><i style="width:${got/NCL*100}%"></i></div>
+      ${CL_LIN.map(c=>{const r=received(c);return `<div class="row" style="padding:7px 0;border-bottom:1px solid var(--line);flex-wrap:nowrap"><span class="box ${r?'ok':''}">${r?I.check:''}</span><span class="small" style="${r?'':'color:var(--ink-2)'}">${c.item}${!r&&!c.req?' <span class="muted">(if available)</span>':''}</span></div>`}).join('')}
+    </div>
+  </div>`;
+}
+
+function streams(gap){
+  const segs=[['Company sale',gap?31.4:43.6,'var(--s1)'],...(gap?[['Unexplained',12.1,'gap']]:[]),['Business income',10.8,'var(--s2)'],['Property sale',4.0,'var(--s3)'],['Employment',2.7,'var(--s4)']];
+  return `<div class="panel streams-wrap">
+    <div class="streams-title"><span class="big">SGD ${gap?'49.0M':'61.1M'} of 61.1M</span><span class="muted">${gap?'of declared wealth is corroborated by evidence':'of declared wealth is corroborated by evidence. Nothing unexplained.'}</span></div>
+    <div class="streams" role="img" aria-label="${gap?'49.0 million corroborated, 12.1 million unexplained':'61.1 million fully corroborated'}">
+      ${segs.map(s=>s[2]==='gap'?`<div class="seg gap" style="flex-grow:${s[1]}" title="Unexplained: SGD 12.1M">Unexplained 12.1M</div>`:`<div class="seg" style="flex-grow:${s[1]};background:${s[2]}" title="${s[0]}: SGD ${s[1]}M">${s[1]>5?s[0]+' '+s[1].toFixed(1)+'M':s[1].toFixed(1)+'M'}</div>`).join('')}
+    </div>
+    <div class="legend">${segs.map(s=>`<span><i style="${s[2]==='gap'?'background:var(--crit-soft);outline:1.5px dashed var(--crit)':'background:'+s[2]}"></i>${s[0]}: SGD ${s[1].toFixed(1)}M</span>`).join('')}</div>
+  </div>`;
+}
+
+function d3(title,rows,plaus,open){
+  return `<details class="ci" ${open?'open':''}><summary><span>${title}</span><span class="caret">${I.chev}</span></summary><div class="body" style="padding-left:14px">${kvt(rows)}<div class="ai" style="margin-top:10px">${I.spark}<div><strong>Plausibility assessment (draft).</strong> ${plaus}</div></div></div></details>`;
+}
+
+function letter(gap,justClosed){
+  const P=PROFILES.lin;const seed=st.seed;
+  const st1=(t,c)=>pill(t,c);
+  const d1=[
+    ['Business income, ownership and profits','10.8','17.7%','Dividend summary, audited highlights, business licence',st1('Corroborated','ok')],
+    ['Employment and salary','2.7','4.4%','Employer letter, payroll credit',st1('Corroborated','ok')],
+    ['Investment returns','None','0%','',st1('N.A.','neu')],
+    ['Property sale and capital appreciation','4.0','6.6%','Sale contract (photo)',st1(st.ackProp?'Partially corroborated, accepted':'Partially corroborated','warn')],
+    ['Inheritance or gift','None','0%','',st1('N.A.','neu')],
+    ['Company sale','43.6','71.3%',gap?'Agreement, May 2021 statement, tax certificate':'Agreement, both payment statements, tax certificate',gap?st1('Partially corroborated','crit'):st1('Corroborated','ok')]
+  ];
+  return `<div class="letter">
+  <div class="row" style="margin-bottom:4px"><h2 style="margin:0">Certification Letter</h2>${pill('Pre-filled by SourceWise','info')}<button class="btn sec sm right" data-act="exportLetter">Export</button></div>
+  <p class="small muted">Lin Zhaoyu. Follows the structure of Azimut’s RM Certification Letter.</p>
+
+  <h3 class="sec">Part C: Background and purpose of account</h3>
+  ${kvt([['Nature of business',P.biz],['Career summary',P.career],['Expected transactions',P.tx+'; '+P.freq.toLowerCase()],['Assets under management',P.aum],['Source of initial funds',P.sof]])}
+
+  <h3 class="sec">D1: Source of wealth summary</h3>
+  <div class="tw"><table class="tbl"><thead><tr><th>Category</th><th>SGD (M)</th><th>% of total</th><th>Evidence obtained</th><th>Status</th></tr></thead><tbody>
+  ${d1.map(r=>`<tr><td>${r[0]}</td><td>${r[1]}</td><td>${r[2]}</td><td class="small">${r[3]}</td><td>${r[4]}</td></tr>`).join('')}
+  <tr><td><strong>Total net worth</strong></td><td><strong>61.1</strong></td><td><strong>100%</strong></td><td colspan="2" class="small muted">After tax. Converted to SGD at indicative rates.</td></tr></tbody></table></div>
+
+  <h3 class="sec">D2: Narrative, from seed capital to today</h3>
+  <div class="nar">
+  <section><h3>1995 to 2003: Employment and savings</h3><p>Mr. Lin worked as a sales manager at an electronics factory in Shenzhen, saving about RMB 1.5M (per RM meeting notes).</p></section>
+  <section><h3>2003: Founding and seed capital</h3><p>He founded Shenzhen Lingrui Precision Components Co., Ltd. on 18 August 2003 with registered capital of RMB 50M ${cite('DOC-02',1,'est')}. ${seed?`<span class="${justClosed==='seed'?'newline':''}">The initial paid-in capital of about RMB 2.5M came from his savings and a RMB 1M loan from his brother, repaid by 2006; the remaining capital was paid in from profits by 2009 (RM explanation, immaterial at under 1% of wealth).</span>`:'<span class="gapline">The origin of the seed capital is not yet explained.</span>'}</p></section>
+  <section><h3>2003 to 2021: Building the business</h3><p>As chairman, he received about RMB 13M in salary and bonuses ${cite('DOC-08',1,'total')}. The company grew to revenue of RMB 401M and net profit of RMB 41.6M by 2020 ${cite('DOC-06',1,'profit')}, and paid him RMB 52M in dividends after tax from 2010 to 2020 ${cite('DOC-06',1,'total')}.</p></section>
+  <section><h3>2021: Sale of 60% of the company</h3><p>In March 2021 he sold 60% to Zhujiang Vista Equity Investment Partnership for RMB 260M in two tranches ${cite('DOC-01',1,'total')}. The first tranche of RMB 180M was received on 20 May 2021 ${cite('DOC-03',1,'pay')}. Tax of RMB 46M was paid on the sale ${cite('DOC-05',1,'total')}.</p></section>
+  <section><h3>2022: Property sale and move to Singapore</h3><p>He sold a residential property in Futian, Shenzhen, in April 2022 for RMB 20M, paid to his own account ${cite('DOC-07',1,'price')}, and moved to Singapore.</p></section>
+  <section><h3>2023: Earn-out payment</h3><p>The second tranche of RMB 80M was an earn-out conditional on 2022 profit ${cite('DOC-01',2,'cond')}. ${gap?'<span class="gapline">Receipt of the second tranche is not yet evidenced.</span>':`<span class="${justClosed==='doc04'?'newline':''}">It was received on 12 June 2023 ${cite('DOC-04',1,'pay')}.</span>`}</p></section>
+  <section><h3>Today, and consistency checks</h3><p>Declared wealth is about SGD 61M, mainly from the 2021 sale. He retains a 40% stake, excluded from net worth. The tax certificate reconciles with the sale proceeds, and dividends are consistent with audited profits. ${gap||!seed?'Open items are listed in the readiness check.':'No inconsistencies remain.'}</p></section>
+  </div>
+
+  <h3 class="sec">D3: Detailed sections</h3>
+  ${d3('D3c: Company sale',[['Company and business','Shenzhen Lingrui Precision Components; precision electronic components'],['Country','China'],['Date of sale','Agreement 15 March 2021; transfer registered 23 April 2021'],['Shareholding at sale','100%, of which 60% sold'],['Proceeds to client','RMB 260M gross, RMB 214M after tax (SGD 43.6M)'],['Buyer','Zhujiang Vista Equity Investment Partnership (LP)']],
+     'The implied valuation of RMB 433M is 10.4 times 2020 net profit, within the 8 to 15 times range for comparable Chinese electronic component manufacturers (simulated benchmark). The earn-out threshold of RMB 45M needed about 4% annual profit growth from 2020, consistent with the 2018 to 2020 trend.',false)}
+  ${d3('D3a: Business income and dividends',[['Company','Shenzhen Lingrui, China, incorporated 2003'],['Shareholding','100% until 2021, now 40%'],['Seed capital',seed?'About RMB 2.5M from savings and a family loan (RM explanation)':'<span class="gapline">Not yet explained</span>'],['Net profit FY2018 to FY2020','RMB 31.3M, 36.8M, 41.6M'],['Dividends received','RMB 52M after tax, 2010 to 2020']],
+     'Dividends of RMB 8M in 2020 were about 19% of that year’s net profit, a conservative payout for a profitable private manufacturer. Profit growth from 2018 to 2020 is steady and in line with revenue.',false)}
+  ${d3('D3b: Employment',[['Employer','Shenzhen Lingrui (2003 to 2021); electronics factory (1995 to 2003, not corroborated)'],['Position','Chairman and legal representative'],['Annual gross salary','About RMB 1.3M (2017 to 2021)'],['Evidence','Employer letter on letterhead; payroll credit in May 2021 statement']],
+     'Salary of about RMB 1.3M a year is in line with chairman pay at a private manufacturer of this size in Shenzhen (simulated benchmark, RMB 1M to 2M).',false)}
+  ${d3('D3d: Property sale',[['Property','Residential flat, Lanting Garden, Futian, Shenzhen'],['Purchase date and price','<span class="gapline">Not provided</span>'],['Sale date and price','April 2022, RMB 20M'],['Net capital gain','Cannot be calculated without purchase details']],
+     'A sale price of RMB 20M for a large flat in the Xiangmihu area of Futian is plausible against public price data (simulated). Purchase details are missing; given materiality, the sale contract is relied on.',false)}
+  </div>`;
+}
+
+function readiness(){
+  const ro=st.submitted;
+  let crit;
+  if(st.doc04){crit=`<div class="issue c done"><div class="row">${pill('Resolved','ok')}</div><h3>Second payment evidenced</h3><p>RMB 80M received on 12 June 2023 ${cite('DOC-04',1,'pay')}. The gap is closed.</p></div>`;}
+  else{
+    let body='';
+    if(st.fu==='none')body=`<button class="btn pri sm" data-act="draftFu">Draft follow-up</button>`;
+    else if(st.fu==='drafted')body=`<div class="row" style="margin:6px 0 8px"><span class="small muted">Follow-up for Mr. Lin</span><div class="seg-toggle right"><button class="${st.fuLang==='en'?'on':''}" data-act="fuLang" data-l="en">English</button><button class="${st.fuLang==='zh'?'on':''}" data-act="fuLang" data-l="zh">中文</button></div></div><div class="msg" style="font-size:13.5px">${esc(st.fuLang==='en'?FU_EN:FU_ZH)}</div><div class="row" style="margin-top:10px"><button class="btn sec sm" data-act="copy" data-t="fu">Copy message</button><button class="btn pri sm right" data-act="fuSent">Mark as sent</button></div>`;
+    else body=st.fuUploading?`<span class="status"><span class="spin"></span>Reading the June 2023 statement</span>`:`<p class="small" style="margin:6px 0 8px">Follow-up sent to Mr. Lin. He has replied with the June 2023 statement.</p><button class="btn pri sm" data-act="uploadFu">Upload received document</button>`;
+    crit=`<div class="issue c"><div class="row">${pill('Critical','crit')}</div><h3>Second payment not evidenced</h3><p>The agreement provides for an RMB 80M earn-out due by 30 June 2023 ${cite('DOC-01',2,'t2')}, and the tax certificate shows tax paid on it on 21 June 2023 ${cite('DOC-05',1,'t2tax')}, but no bank statement confirms receipt. Unexplained: SGD 15.1M before tax, SGD 12.1M after tax.</p>${ro?'':body}</div>`;
+  }
+  const seed=st.seed?`<div class="issue w done"><div class="row">${pill('Explained','ok')}</div><h3>Seed capital</h3><p>${esc(st.seedText)}</p></div>`
+   :`<div class="issue w"><div class="row">${pill('Check','warn')}</div><h3>Seed capital origin not explained</h3><p>The company was founded in 2003 with registered capital of RMB 50M ${cite('DOC-02',1,'est')}, but nothing in the file shows where the initial funds came from. Compliance must assess seed capital.</p>${st.seedOpen?`<label class="small muted" for="sdt">Explanation, drafted from your meeting notes</label><textarea id="sdt" class="inp" style="min-height:150px" data-inp="seedText">${esc(st.seedText)}</textarea><div class="row" style="margin-top:8px"><button class="btn pri sm" data-act="seedSave">Save explanation</button><button class="btn lnk sm" data-act="seedCancel">Cancel</button></div>`:`<button class="btn sec sm" data-act="seedOpen">Add explanation</button>`}</div>`;
+  const prop=st.ackProp?`<div class="issue w done"><div class="row">${pill('Accepted','ok')}</div><h3>Property purchase details</h3><p>${esc(st.ackPropText)}</p></div>`
+   :`<div class="issue w"><div class="row">${pill('Check','warn')}</div><h3>Property purchase details missing</h3><p>No purchase date or price was provided, so the capital gain can’t be calculated, and some contract fields are illegible. The sale price and receiving account are clear ${cite('DOC-07',1,'price')}.</p>${st.ackPropOpen?`<label class="small muted" for="apt">Reason for proceeding</label><textarea id="apt" class="inp" data-inp="ackPropText">${esc(st.ackPropText)}</textarea><div class="row" style="margin-top:8px"><button class="btn pri sm" data-act="ackProp">Save</button><button class="btn lnk sm" data-act="ackPropCancel">Cancel</button></div>`:`<button class="btn sec sm" data-act="ackPropOpen">Accept with reason</button>`}</div>`;
+  const ready=st.doc04&&st.seed&&st.ackProp;
+  const open=(st.doc04?0:1)+(st.seed?0:1)+(st.ackProp?0:1);
+  return `<div class="panel pad" style="position:sticky;top:calc(70px + env(safe-area-inset-top,0px));max-height:calc(100vh - 90px);overflow:auto">
+    <div class="row" style="margin-bottom:10px"><h2 style="margin:0">Readiness check</h2><span class="right small muted">${open?open+' to resolve':'All resolved'}</span></div>
+    <p class="small muted">What compliance is likely to ask in Part F, caught before you submit.</p>
+    ${crit}${seed}${prop}
+    ${ro?'':`<button class="btn pri" style="width:100%;justify-content:center;margin-top:6px" data-act="submit" ${ready?'':'disabled'}>Certify and submit</button>${ready?'':'<p class="small muted" style="margin-top:8px">Resolve all items to submit.</p>'}`}
+  </div>`;
+}
+
+function rmReport(){
+  const gap=gapOpen();
+  let h;
+  if(st.decision==='approve')h='Kevin approved the case. The demo is complete. Use the account menu to reset or jump to another act.';
+  else if(st.submitted)h='Submitted. Switch to Kevin (Compliance) from the account menu to review the case.';
+  else if(gap&&st.fu==='none')h='SourceWise has pre-filled the Certification Letter. The readiness check found a gap the checklist could not see: draft a follow-up for the client.';
+  else if(gap&&st.fu==='drafted')h='Copy the follow-up for Mr. Lin, then mark it as sent.';
+  else if(gap)h='Upload the statement Mr. Lin sent back and watch the gap close.';
+  else if(!st.seed)h='Gap closed. Now add the seed capital explanation, drafted from your meeting notes.';
+  else if(!st.ackProp)h='Accept the property item with a reason, then certify and submit.';
+  else h='Everything is resolved. Certify and submit the letter to compliance.';
+  const jc=st.submitted?null:(st.seed&&!st.ackProp?'seed':(st.doc04&&!st.seed?'doc04':null));
+  return `${stepper('report')}${hint(h)}
+  ${st.submitted?`<div class="banner">${I.check}<span>${st.decision==='approve'?'Approved by Kevin (Compliance) on 22 Oct 2026.':'Certified and submitted to compliance on 22 Oct 2026. The letter is now read only.'}</span>${st.decision?'':`<button class="btn sec sm right" data-act="role" data-r="cc">Switch to Kevin (Compliance)</button>`}</div>`:''}
+  <div class="pagehead"><div><h1>Source of wealth due diligence</h1><p class="muted">Lin Zhaoyu, SW-2026-0142. Drafted by SourceWise, reviewed by you.</p></div>
+    <button class="btn sec" data-act="drawer">${I.chat} Questions${st.forwarded&&!st.rmReplied?' (1)':''}</button></div>
+  <div style="margin-bottom:20px">${streams(gap)}</div>
+  <div class="grid2"><div class="panel pad">${letter(gap,jc)}</div>${readiness()}</div>`;
+}
+
+/* ---------- Compliance screens ---------- */
+function ccQueue(){
+  const status=st.decision==='approve'?pill('Approved','ok'):st.decision==='return'?pill('Returned','warn'):st.decision==='escalate'?pill('Escalated','info'):st.ccOpened?pill('In review','info'):pill('New','ok');
+  return `${hint(st.submitted?'Open Lin Zhaoyu’s case to review it.':'Mr. Lin’s case appears here once Sarah submits it. To skip ahead, open the account menu and choose Act 3.')}
+  <div class="pagehead"><div><h1>Review queue</h1><p class="muted">Certification Letters waiting for compliance</p></div></div>
+  <div class="panel"><div class="tw"><table class="tbl">
+    <thead><tr><th>Client</th><th>Submitted by</th><th>Submitted</th><th>Risk rating</th><th>Review due</th><th>Status</th></tr></thead>
+    <tbody>
+      ${st.submitted?`<tr class="click ${st.ccOpened?'':'new'}" data-act="openReview" tabindex="0"><td><strong>Lin Zhaoyu</strong><div class="fsub">SW-2026-0142</div></td><td>Sarah (RM)</td><td>22 Oct 2026</td><td>${pill('Medium','warn')}</td><td>29 Oct 2026</td><td>${status}</td></tr>`:''}
+      <tr><td>Hiroshi Sato<div class="fsub">SW-2026-0131</div></td><td>Sarah (RM)</td><td>18 Oct 2026</td><td>${pill('Low','ok')}</td><td>25 Oct 2026</td><td>${pill('In review','info')}</td></tr>
+      <tr><td>Elena Moreau<div class="fsub">SW-2026-0126</div></td><td>James (RM)</td><td>15 Oct 2026</td><td>${pill('High','crit')}</td><td>23 Oct 2026</td><td>${pill('In review','info')}</td></tr>
+    </tbody></table></div></div>`;
+}
+
+function partFRows(){
+  const go=(t,l)=>`<button class="btn lnk sm" data-act="ccTab" data-t="${t}">${l}</button>`;
+  const m=st.mediaCleared;
+  return [
+    ['Narrative is internally consistent and chronologically logical','Y','The timeline runs from 1995 employment to the 2023 earn-out without gaps.'],
+    ['Narrative is consistent with evidence obtained','Y','Every statement in D2 cites a document; 8 documents on file.'],
+    ['Narrative is consistent with internet and media research',m?'Y':'Review',`Registry confirms the company and the 2021 share transfer ${go('company','Company tab')}. ${m?'The one media match was confirmed as a different person.':'One potential media match needs your review'} ${m?'':go('media','Adverse media tab')}`],
+    ['Claimed income and profits are consistent with company profile and size','Y','Dividends about 19% of 2020 profit; salary within the benchmark range; sale at 10.4 times profit. See D3 plausibility.'],
+    ['Claimed investment returns are consistent with benchmarks','N.A.','No investment returns claimed.'],
+    ['Unexplained or implausible jumps in wealth','N','None. The second payment gap was closed by the RM before submission.'],
+    ['Inconsistencies in document authenticity','N','Dates, seals, account numbers and agreement references match across documents. The property contract is a blurry photo, accepted by the RM given materiality.'],
+    ['“Too good to be true” scenarios addressed','Y','Valuation is within the range for comparable deals.'],
+    ['No PEP, adverse news or high-risk business indicators',m?'Y':'Review',m?'Not a PEP, no sanctions match, adverse media match cleared.':'Not a PEP and no sanctions match. One adverse media match to review.'],
+    ['Seed capital origin assessed','Y','About RMB 2.5M from savings and a family loan, explained by the RM. Immaterial, under 1% of current wealth.']
+  ];
+}
+
+function vtab(){
+  const t=st.ccTab;
+  if(t==='partf'){
+    const rows=partFRows();const pc=r=>r==='Review'?pill('Review','warn'):r==='N.A.'?pill('N.A.','neu'):pill(r,'ok');
+    return `<div class="row" style="margin-bottom:6px"><h3 style="margin:0">Part F: Sense and sanity check</h3>${st.partF?'<span class="right">'+pill('Confirmed by Kevin','ok')+'</span>':''}</div>
+    <p class="small muted">SourceWise has pre-assessed each item from the case file. You confirm or change them.</p>
+    <div class="tw"><table class="tbl"><thead><tr><th>Check</th><th>Result</th><th>Notes</th></tr></thead><tbody>
+    ${rows.map(r=>`<tr><td style="width:38%">${r[0]}</td><td>${pc(r[1])}</td><td class="small">${r[2]}</td></tr>`).join('')}</tbody></table></div>
+    ${st.partF?'':`<div class="row" style="margin-top:12px"><button class="btn pri" data-act="confirmF" ${st.mediaCleared?'':'disabled'}>Confirm Part F</button>${st.mediaCleared?'':'<span class="small muted">Review the adverse media match first.</span>'}</div>`}`;
+  }
+  if(t==='company')return `<div class="row" style="margin-bottom:12px"><h3 style="margin:0">Company registry check</h3><span class="tag-sim right">Simulated registry data for demo</span></div>
+    <div class="tw"><table class="tbl"><thead><tr><th></th><th>Shenzhen Lingrui (sold)</th><th>Zhujiang Vista (buyer)</th></tr></thead><tbody>
+    <tr><td class="muted">Registration code</td><td>914403007SAMPLE123</td><td>91440101SAMPLE5678</td></tr>
+    <tr><td class="muted">Status</td><td>${pill('In operation','ok')}</td><td>${pill('In operation','ok')}</td></tr>
+    <tr><td class="muted">Established</td><td>18 August 2003</td><td>2016</td></tr>
+    <tr><td class="muted">Type</td><td>Limited liability company</td><td>Limited partnership, registered private equity fund</td></tr>
+    <tr><td class="muted">Representative or manager</td><td>Wu Haoran, since 30 June 2021 (previously Lin Zhaoyu)</td><td>Zhujiang Vista Capital Management Co., Ltd.</td></tr>
+    </tbody></table></div>
+    <h3 style="margin:16px 0 8px">Shareholder change record</h3>
+    <div class="tw"><table class="tbl"><thead><tr><th>Date</th><th>Before</th><th>After</th></tr></thead><tbody><tr><td>23 April 2021</td><td>Lin Zhaoyu 100%</td><td>Zhujiang Vista 60%, Lin Zhaoyu 40%</td></tr></tbody></table></div>
+    <div class="ai" style="margin-top:14px">${I.spark}<div><strong>Summary.</strong> Both companies are registered and active. The registry shows the 60% transfer to the buyer on 23 April 2021, matching the agreement signed on 15 March 2021 ${cite('DOC-01',1,'stake')} and the first payment 27 days later ${cite('DOC-03',1,'pay')}.</div></div>`;
+  if(t==='media')return `<div class="row" style="margin-bottom:12px"><h3 style="margin:0">Screening</h3><span class="right small muted" style="display:inline-flex;gap:5px;align-items:center">${I.lock} Visible to compliance only</span></div>
+    <div class="tw"><table class="tbl"><tbody><tr><td>Sanctions</td><td>${pill('No match','ok')}</td></tr><tr><td>Politically exposed person</td><td>${pill('No match','ok')}</td></tr><tr><td>Adverse media</td><td>${st.mediaCleared?pill('Cleared: different person','ok'):pill('1 potential match','warn')}</td></tr></tbody></table></div>
+    <h3 style="margin:16px 0 4px">Potential match</h3><p class="small muted">Rongcheng Today, 14 November 2019 ${cite('DOC-09',1,'who')}</p>
+    <div class="tw"><table class="tbl"><thead><tr><th>Attribute</th><th>News subject</th><th>Client</th><th>Match</th></tr></thead><tbody>
+    ${[['Name','Lin Zhaoyu (林兆宇)','Lin Zhaoyu (林兆宇)',1],['Age in 2019','38','45',0],['City','Fuzhou','Shenzhen',0],['Occupation','Real estate agent','Company founder and chairman',0],['Company','Fuzhou Lanshe Real Estate Brokerage','Shenzhen Lingrui Precision Components',0]].map(r=>`<tr><td class="muted">${r[0]}</td><td>${r[1]}</td><td>${r[2]}</td><td>${r[3]?pill('Yes','warn'):pill('No','neu')}</td></tr>`).join('')}
+    </tbody></table></div>
+    <div class="ai" style="margin:14px 0">${I.spark}<div><strong>Proposal.</strong> Likely a different person. Only the name matches; age, city, occupation and company all differ. You make the final call.</div></div>
+    ${st.mediaCleared?`<div class="issue done" style="border-left:4px solid var(--accent)"><div class="row">${pill('Confirmed by Kevin (Compliance)','ok')}</div><p style="margin:6px 0 0">${esc(st.mediaNote)}</p></div>`
+    :`<label class="small muted" for="mn">Note for the record</label><textarea id="mn" class="inp" data-inp="mediaNote">${esc(st.mediaNote)}</textarea><button class="btn pri" style="margin-top:10px" data-act="clearMedia">Confirm: not our client</button>`}`;
+  return `<div class="row" style="margin-bottom:12px"><h3 style="margin:0">Jurisdiction context: China</h3></div>
+    <ul class="ctx" style="padding-left:18px;margin:0">
+    <li>Company records are public through the national enterprise credit registry, which shows status, shareholders, legal representative and change history.</li>
+    <li>Registered capital is often paid in over several years, so a large registered capital does not mean a large initial investment.</li>
+    <li>Share transfers must be registered with the local market regulator. Registration before payment, as in this case, is normal.</li>
+    <li>Earn-out payments are common when private equity funds buy private Chinese manufacturers.</li>
+    <li>Gains on share sales are taxed at 20%. A tax payment certificate (完税证明) is the standard evidence.</li>
+    <li>Common red flags: payments from parties not named in the agreement, prices far above typical profit multiples, or a recently established target company.</li></ul>`;
+}
+
+function ccReview(){
+  const tabs=[['partf','Part F'],['company','Company'],['media','Adverse media'],['juris','Jurisdiction context']];
+  let h;
+  if(st.decision)h='Decision recorded. Switch to Sarah (RM) to see the case approved, or reset the demo from the account menu.';
+  else if(!st.mediaCleared&&(st.ccTab==='partf'||st.ccTab==='company'))h='SourceWise has pre-assessed Part F. Shenzhen Lingrui is unfamiliar to you: the Company tab verifies it without emailing Sarah. Then review the adverse media match.';
+  else if(!st.mediaCleared)h='Review the adverse media match and confirm whether it is your client.';
+  else if(!st.partF)h='Back on Part F, every item is now resolved. Confirm it. You can also ask a question in Questions.';
+  else if(!st.answered)h='Open Questions and ask why the sale was paid in two tranches, then record your decision.';
+  else h='Record your decision at the bottom of the letter.';
+  const hdr=st.partF?pill('Part F confirmed','ok'):st.mediaCleared?pill('Part F ready to confirm','info'):pill('Part F: 9 of 10 pre-assessed, 1 needs your review','warn');
+  return `${hint(h)}
+  <div class="pagehead"><div><h1>Lin Zhaoyu</h1>
+    <div class="row small muted" style="gap:14px"><span>SW-2026-0142</span><span>Submitted by Sarah (RM), certified 22 Oct 2026</span><span>Risk rating ${pill('Medium','warn')}</span><span>${hdr}</span></div></div>
+    <button class="btn sec" data-act="drawer">${I.chat} Questions</button></div>
+  <div class="grid2">
+    <div>
+      <div style="margin-bottom:16px">${streams(false)}</div>
+      <div class="panel pad" style="margin-bottom:16px">${letter(false,null)}</div>
+      <div class="panel pad">${st.decision?`<h2>Decision</h2><p>${pill(st.decision==='approve'?'Approved':st.decision==='return'?'Returned to RM':'Escalated to Legal & Compliance Counsel','ok')}</p><p class="small muted" style="margin:0">${esc(st.rationale)}</p>`
+      :`<h2>Your decision</h2>
+        <div class="row" style="margin-bottom:12px">${[['approve','Approve'],['return','Return to RM'],['escalate','Escalate to Legal & Compliance Counsel']].map(o=>`<label class="row" style="gap:6px;cursor:pointer;margin-right:12px;flex-wrap:nowrap"><input type="radio" name="dec" value="${o[0]}" data-chg="dec" ${st.decChoice===o[0]?'checked':''}> ${o[1]}</label>`).join('')}</div>
+        <label class="small muted" for="rat">Rationale</label><textarea id="rat" class="inp" data-inp="rationale">${esc(st.rationale)}</textarea>
+        <div class="row" style="margin-top:10px"><button class="btn pri" data-act="decide" ${st.partF?'':'disabled'}>Sign and record decision</button>${st.partF?'':'<span class="small muted">Confirm Part F first.</span>'}</div>`}</div>
+    </div>
+    <div class="panel" style="position:sticky;top:calc(70px + env(safe-area-inset-top,0px))">
+      <div class="tabs" role="tablist">${tabs.map(t=>`<button class="tab ${st.ccTab===t[0]?'on':''}" role="tab" data-act="ccTab" data-t="${t[0]}">${t[1]}${t[0]==='media'&&!st.mediaCleared?pill('Review','warn'):''}</button>`).join('')}</div>
+      <div class="pad">${vtab()}</div>
+    </div>
+  </div>`;
+}
+
+/* ---------- overlays ---------- */
+function viewer(){
+  const v=st.viewer;if(!v)return'';const D=DOCS[v.doc];
+  const mark=h=>v.k?h.replace(new RegExp('class="hl" data-k="'+v.k+'"'),'class="hl on" data-k="'+v.k+'"'):h;
+  const transHtml=applyHL(md(D.trans),D.hl,1);
+  const ci=CL_LIN.find(c=>c.docs&&c.docs.includes(v.doc));
+  const low=D.facts.filter(f=>f[4]==='Low').length;
+  let pane='';
+  if(v.tab==='summary')pane=`<h3>What this document proves</h3><p>${esc(D.summary)}</p>${low?`<div class="issue w" style="margin-top:14px"><div class="row">${pill(low+' fields read with low confidence','warn')}</div><p style="margin:6px 0 0">Blurry photo. A person should confirm these values or request a clearer copy.</p></div>`:''}<p class="small muted" style="margin-top:16px">AI translation. Refer to the original for exact wording.</p>`;
+  else if(v.tab==='facts')pane=`<p class="small muted">Click a fact to see where it came from.</p><div class="tw"><table class="tbl facts"><thead><tr><th>Field</th><th>Value</th><th>Page</th><th>Confidence</th></tr></thead><tbody>${D.facts.map(f=>`<tr class="${f[5]?'has':''} ${f[5]&&f[5]===v.k?'on':''}" ${f[5]?`data-act="hl" data-k="${f[5]}"`:''}><td class="muted">${esc(f[0])}</td><td>${esc(f[1])}${f[2]?`<div class="fsub">${esc(f[2])}</div>`:''}</td><td>${f[3]}</td><td>${conf(f[4])}</td></tr>`).join('')}</tbody></table></div>`;
+  else pane=`<p class="small muted">${D.en?'The original is in English, so the text is shown unchanged.':'AI translation. Refer to the original for exact wording.'}</p><div class="doc">${mark(transHtml)}</div>`;
+  const cc=st.role==='cc';
+  return `<div class="scrim" data-act="closeViewer"></div>
+  <aside class="viewer" role="dialog" aria-label="Document viewer">
+    <div class="vhead"><div style="flex:1;min-width:0"><h2 style="margin:0">${esc(D.type)}</h2><div class="small muted">${esc(D.file)}</div>
+      <div class="meta">${pill(D.lang,'neu')}${pill(D.src,'info')}${pill(D.pages+(D.pages>1?' pages':' page'),'neu')}${ci&&v.doc!=='DOC-09'?pill('Checklist: '+ci.item,'ok'):''}${D.photo?pill('Phone photo, partly illegible','warn'):''}${cc&&st.verified[v.doc]?pill('Verified by Kevin','ok'):''}</div></div>
+      <button class="x" data-act="closeViewer" aria-label="Close">${I.x}</button></div>
+    <div class="vbody">
+      <div class="vleft"><div class="cap"><span>Original as received</span><span>${D.lang}</span></div><div class="paper doc ${D.photo?'photo':''} ${D.en?'en':''}">${mark(applyHL(md(D.orig),D.hl,0))}</div></div>
+      <div class="vright">
+        <div class="tabs" role="tablist">${[['summary','Summary'],['facts','Key facts'],['trans','Full translation']].map(t=>`<button class="tab ${v.tab===t[0]?'on':''}" data-act="vtab" data-t="${t[0]}">${t[1]}</button>`).join('')}</div>
+        <div class="vpane">${pane}</div>
+        ${cc&&v.doc!=='DOC-09'?`<div class="vfoot"><button class="btn ${st.verified[v.doc]?'sec':'pri'} sm" data-act="verify">${st.verified[v.doc]?'Verified':'Mark as verified'}</button><span class="small muted">Recorded in the audit trail</span></div>`:''}
+      </div>
+    </div>
+  </aside>`;
+}
+
+const AI_ANSWER=()=>`The second payment of RMB 80M was an earn-out. Under Article 4 of the agreement, it was payable only if the company’s audited 2022 net profit reached at least RMB 45M, and was due by 30 June 2023 ${cite('DOC-01',2,'cond')}. It was received on 12 June 2023 with a payment reference to Article 4 ${cite('DOC-04',1,'pay')}, and tax of RMB 16M was paid on it on 21 June 2023 ${cite('DOC-05',1,'t2tax')}.`;
+const AI_PLAIN='The second payment of RMB 80M was an earn-out, payable only if the company’s audited 2022 net profit reached at least RMB 45M (Article 4 of the agreement). It was received on 12 June 2023 and tax was paid on it on 21 June 2023.';
+
+function auditList(){
+  const E=[];const a=(t,w,e,c)=>{if(c)E.push([t,w,e])};
+  a('21 Oct, 10:02','Sarah (RM)','Client profile created',st.profile||st.generated);
+  a('21 Oct, 10:03','SourceWise AI',`Checklist generated (${NCL} items)`,st.generated);
+  a('21 Oct, 10:05','Sarah (RM)','Checklist sent to client',st.checklistSent);
+  a('22 Oct, 09:14','Sarah (RM)','7 documents uploaded',st.uploaded.length>0);
+  a('22 Oct, 09:15','SourceWise AI','Documents classified; Certification Letter pre-filled',st.uploaded.length>0);
+  a('22 Oct, 09:15','SourceWise AI','Readiness check: 1 critical, 2 checks',st.uploaded.length>0);
+  a('22 Oct, 09:18','Sarah (RM)','Follow-up sent to client',st.fu==='sent');
+  a('22 Oct, 11:40','Sarah (RM)','June 2023 statement uploaded; gap closed',st.doc04);
+  a('22 Oct, 11:42','Sarah (RM)','Seed capital explanation added',st.seed);
+  a('22 Oct, 11:44','Sarah (RM)','Property item accepted with reason',st.ackProp);
+  a('22 Oct, 11:46','Sarah (RM)','Certification signed; letter submitted to compliance',st.submitted);
+  a('22 Oct, 11:46','SourceWise AI','Part F pre-assessed: 9 items, 1 for review',st.submitted);
+  a('22 Oct, 14:05','Kevin (Compliance)','Adverse media match confirmed as different person',st.mediaCleared);
+  Object.keys(st.verified).forEach(d=>{if(st.verified[d])E.push(['22 Oct, 14:06','Kevin (Compliance)',DOCS[d].short+' marked as verified'])});
+  a('22 Oct, 14:07','Kevin (Compliance)','Part F confirmed',st.partF);
+  a('22 Oct, 14:08','SourceWise AI','Answered question on payment tranches',st.answered);
+  a('22 Oct, 14:09','Kevin (Compliance)','Question marked resolved',st.resolved);
+  a('22 Oct, 14:09','Kevin (Compliance)','Question sent to Sarah (RM)',st.forwarded);
+  a('22 Oct, 14:30','Sarah (RM)','Replied to compliance question',st.rmReplied);
+  a('22 Oct, 14:12','Kevin (Compliance)',st.decision==='approve'?'Case approved and signed':st.decision==='return'?'Case returned to RM':'Case escalated',!!st.decision);
+  return E.length?`<ul class="audit" style="list-style:none;padding:0;margin:0">${E.map(e=>`<li><span class="t">${e[0]}</span><span><span class="a">${e[1]}</span><br>${e[2]}</span></li>`).join('')}</ul>`:'<div class="empty">Nothing recorded yet.</div>';
+}
+
+function drawer(){
+  if(!st.drawer)return'';
+  const cc=st.role==='cc';
+  let thread='';
+  if(cc){
+    if(!st.asked)thread=`<p class="small muted">Ask about anything in the case. SourceWise answers from the case file first, and you decide whether Sarah needs to be involved.</p>
+      <button class="btn sec" style="width:100%;justify-content:flex-start;text-align:left;margin:6px 0 10px" data-act="ask">${I.chat} Why was the sale paid in two tranches?</button>
+      <input class="inp" style="width:100%" disabled placeholder="Free questions are not available in this demo">`;
+    else{
+      thread=`<div class="msgb"><div class="who2"><span class="av k" style="width:22px;height:22px;font-size:11px">K</span>Kevin (Compliance)</div>Why was the sale paid in two tranches?</div>`;
+      if(st.thinking)thread+=`<div class="msgb aib"><div class="who2">${I.spark} SourceWise AI</div><span class="typing"><i></i><i></i><i></i></span></div>`;
+      else{
+        thread+=`<div class="msgb aib"><div class="who2">${I.spark} SourceWise AI</div>${AI_ANSWER()}</div>`;
+        if(st.resolved)thread+=`<p>${pill('Resolved by Kevin (Compliance). Not sent to RM.','ok')}</p>`;
+        else if(st.forwarded)thread+=`<p>${pill('Sent to Sarah (RM)','info')}</p>`+(st.rmReplied?`<div class="msgb"><div class="who2"><span class="av s" style="width:22px;height:22px;font-size:11px">S</span>Sarah (RM)</div>${esc(AI_PLAIN)}</div>`:'');
+        else thread+=`<div class="row"><button class="btn pri sm" data-act="resolveQ">Mark resolved</button><button class="btn sec sm" data-act="forwardQ">Send to RM</button></div>`;
+      }
+    }
+  }else{
+    if(!st.forwarded)thread=`<div class="empty">No questions from compliance on this case. Questions that SourceWise answers from the file never reach you.</div>`;
+    else thread=`<div class="msgb"><div class="who2"><span class="av k" style="width:22px;height:22px;font-size:11px">K</span>Kevin (Compliance)</div>Why was the sale paid in two tranches?</div>`+
+      (st.rmReplied?`<div class="msgb"><div class="who2"><span class="av s" style="width:22px;height:22px;font-size:11px">S</span>Sarah (RM)</div>${esc(AI_PLAIN)}</div>`:
+      `<label class="small muted">Your reply (suggested by SourceWise)</label><textarea class="inp" disabled>${esc(AI_PLAIN)}</textarea><button class="btn pri sm" style="margin-top:8px" data-act="rmReply">Send reply</button>`);
+  }
+  return `<div class="scrim" data-act="closeDrawer"></div>
+  <aside class="drawer" role="dialog" aria-label="Questions">
+    <div class="vhead"><div style="flex:1"><h2 style="margin:0">Questions</h2><div class="small muted">Lin Zhaoyu, SW-2026-0142</div></div><button class="x" data-act="closeDrawer" aria-label="Close">${I.x}</button></div>
+    <div class="tabs">${[['thread','Case thread'],['audit','Audit trail']].map(t=>`<button class="tab ${st.drawerTab===t[0]?'on':''}" data-act="dtab" data-t="${t[0]}">${t[1]}</button>`).join('')}</div>
+    <div class="dpane">${st.drawerTab==='thread'?thread:auditList()}</div>
+  </aside>`;
+}
+
+function modal(){
+  if(st.modal==='welcome')return `<div class="scrim"></div><div class="modal" role="dialog" aria-label="Welcome"><div class="card">
+    <div class="logo" style="color:var(--ink);margin-bottom:14px"><span style="background:var(--brand);border-radius:8px;padding:6px;display:flex">${LOGO}</span><span>SourceWise</span></div>
+    <p style="margin:-6px 0 16px;font-size:14px;font-weight:600;color:var(--ink-2)">Prototype by the 2026 NUS MBA team</p>
+    <h2>Source of wealth checks, without the back-and-forth</h2>
+    <p>Sarah, a relationship manager, is onboarding Mr. Lin Zhaoyu, a first generation entrepreneur from Shenzhen. SourceWise helps her request the right documents and pre-fills the RM Certification Letter, catching gaps before submission. Kevin from compliance then completes his Part F review.</p>
+    <p>Use the account menu at the top right to switch between <strong>Sarah (RM)</strong> and <strong>Kevin (Compliance)</strong>, jump to a scene, or reset. The blue strip on each screen tells you what to try next.</p>
+    <p class="small muted">All people, companies and documents are fictional. AI outputs are scripted for this demo.</p>
+    <button class="btn pri" data-act="closeModal" style="margin-top:6px">Start as Sarah (RM)</button></div></div>`;
+  if(st.modal==='reset')return `<div class="scrim" data-act="closeModal"></div><div class="modal" role="dialog" aria-label="Reset demo"><div class="card">
+    <h2>Reset the demo?</h2><p>This restores everything to the starting state and switches back to Sarah (RM).</p>
+    <div class="row"><button class="btn pri" data-act="reset">Reset demo</button><button class="btn sec" data-act="closeModal">Cancel</button></div></div></div>`;
+  if(st.modal==='certify')return `<div class="scrim" data-act="closeModal"></div><div class="modal" role="dialog" aria-label="Certify and submit"><div class="card" style="max-width:620px">
+    <h2>Certify and submit</h2><p class="small muted">As in Parts B and E of the Certification Letter, you confirm the following for Lin Zhaoyu.</p>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px 18px;margin:12px 0 16px">${CERTS.map((c,i)=>`<div class="row small" style="flex-wrap:nowrap;gap:8px"><span class="box ok">${I.check}</span>${i+1}. ${c}</div>`).join('')}</div>
+    <label class="row" style="flex-wrap:nowrap;align-items:flex-start;gap:10px;cursor:pointer;background:var(--surface-2);padding:12px;border-radius:8px"><input type="checkbox" data-chg="cert" ${st.certChecked?'checked':''} style="margin-top:3px"><span>I confirm the information in this certification is true, complete and accurate to the best of my knowledge, and was prepared under the Company’s policies and applicable MAS regulations.</span></label>
+    <div class="fgrid" style="margin:14px 0"><div class="field"><label>Full name</label><div class="v">Sarah Tan</div></div><div class="field"><label>Date</label><div class="v">22 Oct 2026</div></div></div>
+    <div class="row"><button class="btn pri" data-act="certSubmit" ${st.certChecked?'':'disabled'}>Sign and submit</button><button class="btn sec" data-act="closeModal">Cancel</button></div></div></div>`;
+  return'';
+}
+
+/* ---------- render ---------- */
+const app=document.getElementById('app'),overlay=document.getElementById('overlay');
+function render(){
+  let main;
+  if(st.role==='rm'){const v=st.rmView;main=v==='home'?rmHome():v==='profile'?rmProfile():v==='checklist'?rmChecklist():v==='upload'?rmUpload():rmReport();}
+  else main=st.ccView==='review'?ccReview():ccQueue();
+  app.innerHTML=topbar()+`<main class="wrap">${main}</main>`;
+  overlay.innerHTML=viewer()+drawer()+modal()+(st.toast?`<div class="toast" role="status">${esc(st.toast)}</div>`:'');
+  document.body.style.overflow=(st.viewer||st.drawer||st.modal)?'hidden':'';
+  if(st.viewer&&st.viewer.k&&st.viewer.scroll){
+    st.viewer.scroll=false;
+    requestAnimationFrame(()=>{document.querySelectorAll('.viewer mark.hl.on').forEach(m=>m.scrollIntoView({block:'center',behavior:'smooth'}))});
+  }
+}
+
+/* ---------- actions ---------- */
+function go(v){if(st.role==='rm')st.rmView=v;else st.ccView=v;window.scrollTo(0,0);render()}
+function startUpload(){
+  st.uploading=true;st.tick=0;render();
+  const step=()=>{st.tick++;render();if(st.tick<BATCH1.length+4){later(step,330)}else{st.uploading=false;st.uploaded=[...BATCH1];render();toast('7 documents read and mapped to the checklist')}};
+  later(step,330);
+}
+function jump(a){
+  clearTimers();st=fresh();
+  if(a>=2){st.profile='lin';st.generated=true;st.checklistSent=true;st.rmView='upload'}
+  if(a>=3){st.uploaded=[...BATCH1,'DOC-04'];st.doc04=true;st.fu='sent';st.seed=true;st.ackProp=true;st.certChecked=true;st.submitted=true;st.rmView='report';st.role='cc';st.ccView='queue'}
+  window.scrollTo(0,0);render();toast(a===1?'Jumped to Act 1':a===2?'Jumped to Act 2: Mr. Lin’s documents are ready to upload':'Jumped to Act 3: the case is in Kevin’s queue');
+}
+const ACT={
+  menu(){st.menu=!st.menu;render()},
+  role(e){st.role=e.dataset.r;st.menu=false;st.drawer=null;st.viewer=null;if(st.role==='cc'&&st.submitted&&!st.ccOpened)st.ccView='queue';window.scrollTo(0,0);render()},
+  jump(e){jump(+e.dataset.a)},
+  about(){st.menu=false;st.modal='welcome';render()},
+  askReset(){st.menu=false;st.modal='reset';render()},
+  reset(){clearTimers();st=fresh();window.scrollTo(0,0);render();toast('Demo reset')},
+  closeModal(){st.modal=null;render()},
+  go(e){go(e.dataset.v)},
+  openLin(){go(rmLinView())},
+  bell(){if(st.forwarded&&!st.rmReplied){st.rmView='report';st.drawer=true;st.drawerTab='thread';render()}else toast('No new notifications')},
+  generate(){st.generated=true;st.clProfile=st.profile||'lin';go('checklist')},
+  clp(e){st.clProfile=e.dataset.p;render()},
+  msgLang(e){st.msgLang=e.dataset.l;render()},
+  copy(e){const t=e.dataset.t==='msg'?(st.msgLang==='en'?MSG_EN:MSG_ZH):(st.fuLang==='en'?FU_EN:FU_ZH);try{navigator.clipboard.writeText(t)}catch(_){}toast('Message copied')},
+  exportPdf(){toast('PDF exported (demo only)')},
+  exportLetter(){toast('Certification Letter exported (demo only)')},
+  markSent(){st.checklistSent=true;toast('Checklist sent to Mr. Lin');go('upload')},
+  upload(){startUpload()},
+  openDoc(e){st.viewer={doc:e.dataset.doc,k:e.dataset.k||null,tab:e.dataset.k?'facts':'summary',scroll:true};render()},
+  closeViewer(){st.viewer=null;render()},
+  vtab(e){st.viewer.tab=e.dataset.t;st.viewer.scroll=!!st.viewer.k;render()},
+  hl(e){st.viewer.k=e.dataset.k;st.viewer.scroll=true;render()},
+  verify(){const d=st.viewer.doc;st.verified[d]=!st.verified[d];render()},
+  draftFu(){st.fu='drafted';render()},
+  fuLang(e){st.fuLang=e.dataset.l;render()},
+  fuSent(){st.fu='sent';toast('Follow-up sent to Mr. Lin');render()},
+  uploadFu(){st.fuUploading=true;render();later(()=>{st.fuUploading=false;st.doc04=true;st.uploaded=[...st.uploaded,'DOC-04'];render();toast('June 2023 statement read. Gap closed.')},1600)},
+  seedOpen(){st.seedOpen=true;render()},
+  seedCancel(){st.seedOpen=false;render()},
+  seedSave(){st.seed=true;st.seedOpen=false;render();toast('Seed capital explanation added to the letter')},
+  ackPropOpen(){st.ackPropOpen=true;render()},
+  ackPropCancel(){st.ackPropOpen=false;render()},
+  ackProp(){st.ackProp=true;st.ackPropOpen=false;render()},
+  submit(){st.modal='certify';render()},
+  certSubmit(){st.modal=null;st.submitted=true;window.scrollTo(0,0);render();toast('Certified and submitted to compliance')},
+  openReview(){st.ccOpened=true;go('review')},
+  ccTab(e){st.ccTab=e.dataset.t;render()},
+  clearMedia(){st.mediaCleared=true;st.ccTab='partf';toast('Match cleared. Part F updated.');render()},
+  confirmF(){st.partF=true;render();toast('Part F confirmed')},
+  decide(){st.decision=st.decChoice;window.scrollTo(0,0);render();toast(st.decision==='approve'?'Case approved':st.decision==='return'?'Case returned to Sarah':'Case escalated')},
+  drawer(){st.drawer=true;render()},
+  closeDrawer(){st.drawer=null;render()},
+  dtab(e){st.drawerTab=e.dataset.t;render()},
+  ask(){st.asked=true;st.thinking=true;render();later(()=>{st.thinking=false;st.answered=true;render()},1400)},
+  resolveQ(){st.resolved=true;render();toast('Question resolved without involving Sarah')},
+  forwardQ(){st.forwarded=true;render();toast('Question sent to Sarah (RM)')},
+  rmReply(){st.rmReplied=true;render();toast('Reply sent to Kevin')}
+};
+document.addEventListener('click',e=>{
+  const t=e.target.closest('[data-act]');
+  if(st.menu&&!e.target.closest('.who')){st.menu=false;if(!t){render();return}}
+  if(!t)return;const a=t.dataset.act;if(ACT[a]){e.preventDefault();ACT[a](t)}
+});
+document.addEventListener('keydown',e=>{
+  if(e.key==='Escape'){if(st.menu)st.menu=false;else if(st.viewer)st.viewer=null;else if(st.drawer)st.drawer=null;else if(st.modal&&st.modal!=='welcome')st.modal=null;render()}
+  if((e.key==='Enter'||e.key===' ')&&e.target.matches('tr[data-act]')){e.preventDefault();const a=e.target.dataset.act;ACT[a]&&ACT[a](e.target)}
+});
+document.addEventListener('input',e=>{const k=e.target.dataset&&e.target.dataset.inp;if(k)st[k]=e.target.value});
+document.addEventListener('change',e=>{
+  const c=e.target.dataset&&e.target.dataset.chg;
+  if(c==='loadProfile'){st.profile=e.target.value||null;render()}
+  if(c==='dec'){st.decChoice=e.target.value}
+  if(c==='cert'){st.certChecked=e.target.checked;render()}
+});
+st.modal='welcome';
+render();
+</script>
+</body>
+</html>
